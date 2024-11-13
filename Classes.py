@@ -10,6 +10,7 @@ class MainInfo():
 
 class Characteristic():
     def __init__(self):
+        #здесь делаем распределение наших очков,от туда узнаем модификаторы и спасброски(еще зависят от рассы)
         pass
     STR = 10
     DEX = 10
@@ -17,6 +18,14 @@ class Characteristic():
     INT = 10
     WIS = 10
     CHA = 10
+    master_bonus = 2
+    modSTR = 0 
+    modDEX = 0
+    modCON = 0
+    modINT = 0
+    modWIS = 0
+    modCHA = 0
+    saving_throws = {}
 
 class Abilities():
     def __init__(self):
@@ -58,6 +67,5 @@ class AdditionalInformation():
     def __init__(self):
         pass
     languages = []
-    saving_throws = []
     features_and_traits = []
-    
+
