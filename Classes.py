@@ -1,22 +1,22 @@
 class MainInfo():
     def __init__(self):
         pass
-    name = ''
-    category = ''
+    name = ""
+    category = "" #класс
     level = 1
-    race = ''
-    worldview = ''
+    race = ""
+    worldview = ""
 
 
 class Characteristic():
     def __init__(self):
         pass
-    STR = 1
-    DEX = 1
-    CON = 1
-    INT = 1
-    WIS = 1
-    CHA = 1
+    STR = 10
+    DEX = 10
+    CON = 10
+    INT = 10
+    WIS = 10
+    CHA = 10
 
 class Abilities():
     def __init__(self):
@@ -36,7 +36,7 @@ class DefenseAndAttack():
     def __init__(self):
         pass
     AC = 1
-    initiative = 1
+    initiative = 0
     movement_speed = 1
     AttacksAndSpells = []
 
@@ -45,7 +45,7 @@ class EquipmentAndInventory():
         pass
     weapons_and_armor = []
     items_and_supplies = []
-    money = []
+    money = 0
 
 class PrehistoryAndPersonality():
     def __init__(self):
@@ -60,3 +60,4 @@ class AdditionalInformation():
     languages = []
     saving_throws = []
     features_and_traits = []
+    
