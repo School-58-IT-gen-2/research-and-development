@@ -26,6 +26,7 @@ class Characteristic():
     modWIS = 0
     modCHA = 0
     saving_throws = {}
+    saving_throws_death = 0
 
 class Abilities():
     def __init__(self):
@@ -44,10 +45,10 @@ class PointsAndHealth():
 class DefenseAndAttack():
     def __init__(self):
         pass
-    AC = 1
+    AC = 0
     initiative = 0
     movement_speed = 1
-    AttacksAndSpells = []
+    AttacksAndSpells = {}
 
 class EquipmentAndInventory():
     def __init__(self):
