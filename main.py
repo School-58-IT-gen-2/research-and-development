@@ -13,8 +13,11 @@ def choose():
     choose = races[input()]
     with open(f'{choose}.json', 'r', encoding="utf-8") as race_file: 
         race_file = json.load(race_file)
-    player_list["race"] = race_file["race"]['name']
+    subrace = race_file["race"]['subraces']
+    random.shuffle(subrace)
+    subrace = subrace[0]
 
+    player_list["race"] = subrace['name']
     if gender == 'M':
          names = race_file["race"]["male_names"]
     else:
@@ -40,15 +43,25 @@ def choose():
          stats[i] = values[a]
          a+=1
          
-    ability_boneses = race_file["race"]["ability_bonuses"]
-    for i in ability_boneses.keys():
-         stats[i] += ability_boneses[i]
+    ability_bonuses = race_file["race"]["ability_bonuses"]
+    for i in ability_bonuses.keys():
+         stats[i] += ability_bonuses[i]
+
+    ability_bonuses = subrace["ability_bonuses"]
+    for i in ability_bonuses.keys():
+         stats[i] += ability_bonuses[i]
+
 
     stats_modifiers = player_list["stats_modifiers"]
     for i in stats.keys():
         stats_modifiers[i] = (stats[i] - 10)//2
     player_list["stats"] = stats
     player_list["stats_modifiers"] = stats_modifiers
+
+    traits = race_file["race"]["traits"]
+    subrace_traits = subrace["traits"]
+    for i in subrace_traits.keys():
+         traits[i] = subrace_traits[i]
 
 
     return player_list
