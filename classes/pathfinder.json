@@ -6,17 +6,6 @@
       "primary_ability": ["dexterity", "wisdom"],
       "saving_throws": ["strength", "dexterity"],
       "skills": ["Внимание", "Атлетика", "Выживание", "Природа", "Анализ", "Скрытность", "Акробатика"],
-      "equipment_options": {
-        "weapons": [
-          {
-            "option_1": ["Длинный меч", "Короткий меч"],
-            "option_2": ["Лук", "Короткий лук"]
-          }
-        ],
-        "armor": ["Кожаный доспех"],
-        "packs": ["Набор исследователя", "Набор путешественника"],
-        "miscellaneous": ["Амулет", "Охотничий нож"]
-      },
       "features_by_level": {
         "1": [
           {
