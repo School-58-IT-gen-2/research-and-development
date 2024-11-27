@@ -43,12 +43,17 @@ def choose():
     #stats:
     primary_ability = class_file["class"]["primary_ability"]
     stats = player_list["stats"]
-    values = [13,12,10,8]
-    max_values = [15,14]
+    values = [15,14,13,12,10,8]
+    max_values = []
+    for i in range(len(primary_ability)):
+         max_values.append(values.pop(0))
     random.shuffle(values)
     a = 0 
+    print(primary_ability)
     for i in stats.keys():
          if i not in primary_ability:
+              print(a)
+              print(values)
               stats[i] = values[a]
               a+=1
     for i in primary_ability:
