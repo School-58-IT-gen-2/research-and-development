@@ -1,7 +1,7 @@
 import json
 import random
-classs = {'следопыт':'pathfinder'}
-races = {"дварф":'dwarf',"эльф":'elves',"halfling":'Полурослик',"human":'Человек',"dragonborn":'Драконорожденный',"gnom":'Гном',"halfelf":'Полуэльф',"halfork":'Полуорк',"tiefling":'Тифлинг'}
+classs = {'Следопыт':'pathfinder',"Варвар":"barbarian","Бард":"bard","Плут":"dodger","Друид":"druid","Колдун":"magician","Монах":"monk","Паладин":"paladin","Жрец":"priest","Чародей":"warlock","Воин":"warrior","Волшебник":"wizzard"}
+races = {"Дварф":'dwarf',"Эльф":'elves','Полурослик':"halfling",'Человек':"human",'Драконорожденный':"dragonborn",'Гном':"gnom",'Полуэльф':"halfelf",'Полуорк':"halfork",'Тифлинг':"tiefling"}
 
 with open('player.json', 'r', encoding="utf-8") as player_list: 
         player_list = json.load(player_list)
