@@ -122,18 +122,19 @@ def choose():
     #languages
     player_list["languages"]  = race_file["race"]["languages"] 
 
-    #spels
-    for i in class_file["class"]["spells"].keys():
-        player_list["spells_and_magic"][i] = class_file["class"]["spells"][i]
+    #spells
+    for i in class_file["class"]["spells"]:
+           keys = []
+           for j in i.keys():
+                keys.append(i[j])
+           player_list["spells_and_magic"][keys[0]] = keys[1]
 
     #weapons
-    keys = race_file["race"]["weapons"].keys()
-    keys.shuffle()
-    player_list["weapons"].append(race_file["race"]["weapons"][keys[0]])
+    player_list["weapons"].append(race_file["starting_equipment"]["weapons"][random.randint(0,len(race_file["starting_equipment"]["weapons"])-1)])
 
     
     #attack and damage
-    with open(f'weapons.json', 'r', encoding="utf-8") as weapon_file: 
+    with open(f'weapon.json', 'r', encoding="utf-8") as weapon_file: 
         weapon_file = json.load(weapon_file) 
     for i in  player_list["weapons"]:
         player_list["attack_and_damage_values"][player_list["weapons"]]  = weapon_file["weapons"][i]

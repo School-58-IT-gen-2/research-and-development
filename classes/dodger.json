@@ -3,8 +3,8 @@
       "name": "Плут",
       "description": "Плуты — мастера скрытности, хитрости и манипуляций. Они искусно используют свои навыки для кражи, взлома, маскировки, а также для ведения дипломатии и шантажа.",
       "hit_dice": "1d8",
-      "primary_ability": ["dexterity", "intelligense"],
-      "saving_throws": ["dexterity", "intelligense"],
+      "primary_ability": ["dexterity", "intelligence"],
+      "saving_throws": ["dexterity", "intelligence"],
       "skills": ["Акробатика", "Запугивание", "Проницательность", "Анализ", "Скрытность", "Лжесвидетельство", "Похищение"],
       "features_by_level": {
         "1": [

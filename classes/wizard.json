@@ -3,8 +3,8 @@
       "name": "Волшебник",
       "description": "Волшебники — маги, которые достигают своей магической мощи через изучение и понимание магии. Они могут заучивать заклинания из своих томов, создавать новые заклинания и манипулировать магическими силами с помощью своей intelligenseа и подготовки.",
       "hit_dice": "1d6",
-      "primary_ability": ["intelligense"],
-      "saving_throws": ["intelligense", "wisdom"],
+      "primary_ability": ["intelligence"],
+      "saving_throws": ["intelligence", "wisdom"],
       "skills": ["Анализ", "История", "Религия", "Проницательность", "Природа", "Магия"],
       "features_by_level": {
         "1": [
