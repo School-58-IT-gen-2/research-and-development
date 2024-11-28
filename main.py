@@ -28,6 +28,11 @@ def choose():
     player_list["name"] = names[0]
 
 
+    #age
+    race_file['race']["age"]
+    player_list['age'] = random.randint(race_file['race']["age"]['min'],race_file['race']["age"]['max'])
+
+
     print(f"choose class:")
     for i in race_file['class_options']:
         print(i)
@@ -116,6 +121,28 @@ def choose():
 
     #languages
     player_list["languages"]  = race_file["race"]["languages"] 
+
+    #spels
+    for i in class_file["class"]["spells"].keys():
+        player_list["spells_and_magic"][i] = class_file["class"]["spells"][i]
+
+    #weapons
+    keys = race_file["race"]["weapons"].keys()
+    keys.shuffle()
+    player_list["weapons"].append(race_file["race"]["weapons"][keys[0]])
+
+    
+    #attack and damage
+    with open(f'weapons.json', 'r', encoding="utf-8") as weapon_file: 
+        weapon_file = json.load(weapon_file) 
+    for i in  player_list["weapons"]:
+        player_list["attack_and_damage_values"][player_list["weapons"]]  = weapon_file["weapons"][i]
+
+
+    with open(f'spells.json', 'r', encoding="utf-8") as spells_file: 
+        spells_file = json.load(spells_file) 
+    for i in  player_list["spells_and_magic"].keys():
+        player_list["attack_and_damage_values"][i]  = spells_file["spells"][i] 
 
 
     return player_list
