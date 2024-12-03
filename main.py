@@ -137,7 +137,7 @@ def choose():
     with open(f'weapon.json', 'r', encoding="utf-8") as weapon_file: 
         weapon_file = json.load(weapon_file) 
     for i in  player_list["weapons"]:
-        player_list["attack_and_damage_values"][player_list["weapons"]]  = weapon_file["weapons"][i]
+        player_list["attack_and_damage_values"][i] = weapon_file["weapons"][i]
 
 
     with open(f'spells.json', 'r', encoding="utf-8") as spells_file: 

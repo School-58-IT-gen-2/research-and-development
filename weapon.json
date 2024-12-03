@@ -55,6 +55,14 @@
       "properties": ["Двуручное"],
       "weight": 6,
       "cost": 10
+    },
+    "Рукоятка": {
+      "type": "Военное ближнее",
+      "damage": "1d8",
+      "damage_type": "Дробящий",
+      "properties": ["Двуручное"],
+      "weight": 1,
+      "cost": 5
     }
   },
   "armor": {
