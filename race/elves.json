@@ -95,10 +95,7 @@
         "chaotic_good": "Хаотичный добрый",
         "lawful_neutral": "Законопослушный нейтральный",
         "true_neutral": "Нейтральный",
-        "chaotic_neutral": "Хаотичный нейтральный",
-        "lawful_evil": "Законопослушный злой",
-        "neutral_evil": "Нейтральный злой",
-        "chaotic_evil": "Хаотичный злой"
+        "chaotic_neutral": "Хаотичный нейтральный"
       }
     },
     "class_options": [
