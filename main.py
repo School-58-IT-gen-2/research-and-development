@@ -16,10 +16,12 @@ def choose():
     with open(f'race/{choose}.json', 'r', encoding="utf-8") as race_file: 
         race_file = json.load(race_file)
     subrace = race_file["race"]['subraces']
-    random.shuffle(subrace)
-    subrace = subrace[0]
-
-    player_list["race"] = subrace['name']
+    if subrace != []:
+        random.shuffle(subrace)
+        subrace = subrace[0]
+        player_list["race"] = subrace['name']
+    else:
+         player_list["race"] = race_file["race"]['name']
     if gender == 'M':
          names = race_file["race"]["man_names"]
     else:
@@ -54,11 +56,8 @@ def choose():
          max_values.append(values.pop(0))
     random.shuffle(values)
     a = 0 
-    print(primary_ability)
     for i in stats.keys():
          if i not in primary_ability:
-              print(a)
-              print(values)
               stats[i] = values[a]
               a+=1
     for i in primary_ability:
@@ -91,9 +90,10 @@ def choose():
 
     #умения
     traits = race_file["race"]["traits"]
-    subrace_traits = subrace["traits"]
-    for j in subrace_traits:
-         traits.append(j)      
+    if subrace != []:
+        subrace_traits = subrace["traits"]
+        for j in subrace_traits:
+            traits.append(j)      
     for i in traits:
         player_list["traits_and_abilities"].append(i)
 
@@ -140,11 +140,34 @@ def choose():
         player_list["attack_and_damage_values"][i] = weapon_file["weapons"][i]
 
 
-    with open(f'spells.json', 'r', encoding="utf-8") as spells_file: 
-        spells_file = json.load(spells_file) 
-    for i in  player_list["spells_and_magic"].keys():
-        player_list["attack_and_damage_values"][i]  = spells_file["spells"][i] 
+    # with open(f'spells.json', 'r', encoding="utf-8") as spells_file: 
+    #     spells_file = json.load(spells_file) 
+    # for i in  player_list["spells_and_magic"].keys():
+    #     player_list["attack_and_damage_values"][i]  = spells_file["spells"][i] 
 
+
+    #inventory
+    armor = race_file["starting_equipment"]["armor"]
+    random.shuffle(armor)
+    player_list["inventory"].append(armor[0])
+
+    keys = []
+    for j in race_file["starting_equipment"]["packs"].keys():
+        keys.append(j)
+    random.shuffle(keys)
+    for i in race_file["starting_equipment"]["packs"][keys[0]]:
+         player_list["inventory"].append(i)
+    tools = race_file["starting_equipment"]["tools"]
+    random.shuffle(tools)
+    player_list["inventory"].append(tools[0])
+         
+    #worldview
+    keys = []
+    for j in race_file["race"]["worldview"].keys():
+        keys.append(j)
+    random.shuffle(keys)
+    player_list["worldview"] = race_file["race"]["worldview"][keys[0]]
+    
 
     return player_list
 
