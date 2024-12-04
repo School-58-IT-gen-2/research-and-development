@@ -1,6 +1,6 @@
 import json
 import random
-classs = {'Следопыт':'pathfinder',"Варвар":"barbarian","Бард":"bard","Плут":"dodger","Друид":"druid","Колдун":"magician","Монах":"monk","Паладин":"paladin","Жрец":"priest","Маг":"warlock","Воин":"warrior","Волшебник":"wizzard"}
+clases = {'Следопыт':'pathfinder',"Варвар":"barbarian","Бард":"bard","Плут":"dodger","Друид":"druid","Колдун":"magician","Монах":"monk","Паладин":"paladin","Жрец":"priest","Маг":"warlock","Воин":"warrior","Волшебник":"wizzard"}
 races = {"Дварф":'dwarf',"Эльф":'elves','Полурослик':"halfling",'Человек':"human",'Драконорожденный':"dragonborn",'Гном':"gnom",'Полуэльф':"halfelf",'Полуорк':"halfork",'Тифлинг':"tiefling"}
 
 with open('player.json', 'r', encoding="utf-8") as player_list: 
@@ -12,8 +12,8 @@ def choose():
     print(f"choose race:")
     for i in races.keys():
         print(i)
-    choose = races[input()]
-    with open(f'race/{choose}.json', 'r', encoding="utf-8") as race_file: 
+    rac = races[input()]
+    with open(f'race/{rac}.json', 'r', encoding="utf-8") as race_file: 
         race_file = json.load(race_file)
     subrace = race_file["race"]['subraces']
     if subrace != []:
@@ -38,9 +38,9 @@ def choose():
     print(f"choose class:")
     for i in race_file['class_options']:
         print(i)
-    choose = classs[input()]
+    clas = clases[input()]
 
-    with open(f'classes/{choose}.json', 'r', encoding="utf-8") as class_file: 
+    with open(f'classes/{clas}.json', 'r', encoding="utf-8") as class_file: 
         class_file = json.load(class_file)
     subclass = class_file["class"]['subclasses']
     random.shuffle(subclass)
@@ -66,7 +66,8 @@ def choose():
     ability_bonuses = race_file["race"]["ability_bonuses"]
     for i in ability_bonuses.keys():
          stats[i] += ability_bonuses[i]
-    ability_bonuses = subrace["ability_bonuses"]
+    if subrace != []:
+        ability_bonuses = subrace["ability_bonuses"]
     for i in ability_bonuses.keys():
          stats[i] += ability_bonuses[i]
 
@@ -140,8 +141,14 @@ def choose():
         player_list["attack_and_damage_values"][i] = weapon_file["weapons"][i]
 
 
-    # with open(f'spells.json', 'r', encoding="utf-8") as spells_file: 
-    #     spells_file = json.load(spells_file) 
+    with open(f'spells.json', 'r', encoding="utf-8") as spells_file: 
+        spells_file = json.load(spells_file) 
+
+    if rac in spells_file["races"].keys():
+         player_list["spells_and_magic"] = spells_file["races"][rac]
+
+    if clas in spells_file["races"].keys():
+         player_list["spells_and_magic"] = spells_file["classes"][clas]
     # for i in  player_list["spells_and_magic"].keys():
     #     player_list["attack_and_damage_values"][i]  = spells_file["spells"][i] 
 
@@ -150,6 +157,7 @@ def choose():
     armor = race_file["starting_equipment"]["armor"]
     random.shuffle(armor)
     player_list["inventory"].append(armor[0])
+    player_list["attack_and_damage_values"][armor[0]] = weapon_file["armor"][armor[0]]
 
     keys = []
     for j in race_file["starting_equipment"]["packs"].keys():
