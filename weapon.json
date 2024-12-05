@@ -48,6 +48,14 @@
       "weight": 3,
       "cost": 15
     },
+    "Короткий меч": {   
+      "type": "Военное ближнее",
+      "damage": "1d6",    
+      "damage_type": "Колющий",
+      "properties": ["Изящное", "Лёгкое"],  
+      "weight": 2,
+      "cost": 10   
+     },
     "Меч": {
       "type": "Военное ближнее",
       "damage": "1d8",
@@ -79,7 +87,31 @@
       "properties": ["Двуручное"],
       "weight": 1,
       "cost": 5
-    }
+    },
+    "Короткий лук": {
+    "type": "Простое дальнобойное",  
+    "damage": "1d6",
+    "damage_type": "Колющий",
+    "properties": ["Боеприпас (дистанция 80/320)"],
+    "weight": 2,
+    "cost": 25
+  },
+  "Праща": {
+    "type": "Простое дальнобойное",
+    "damage": "1d4", 
+    "damage_type": "Дробящий",
+    "properties": ["Боеприпас (дистанция 30/120)"],    
+    "weight": 0,
+    "cost": 0   
+   },
+  "Посох": {     
+    "type": "Простое ближнее",
+    "damage": "1d6",   
+    "damage_type": "Дробящий",
+    "properties": ["Универсальное (1d8)"],     
+    "weight": 4,
+    "cost": 2    
+  }
   },
   "armor": {
     "Стёганый доспех": {
@@ -90,14 +122,14 @@
       "weight": 8,
       "cost": 5
     },
-    "Легкие доспехи": {
-      "type": "Лёгкий",
-      "ac_base": 11,
-      "dex_bonus": true,
-      "stealth_disadvantage": true,
-      "weight": 8,
-      "cost": 5
-    },
+    "Лёгкие доспехи": {
+    "type": "Лёгкий",   
+    "ac_base": 12,
+    "dex_bonus": true,  
+    "stealth_disadvantage": false,
+    "weight": 8,
+    "cost": 25
+        },
     "Чешуйчатый доспех": {
       "type": "Лёгкий",
       "ac_base": 11,
@@ -114,6 +146,15 @@
       "weight": 10,
       "cost": 10
     },
+    "Плетёный доспех": {
+    "type": "Средний", 
+    "ac_base": 14,
+    "dex_bonus": true,   
+    "max_dex_bonus": 2,
+    "stealth_disadvantage": false, 
+    "weight": 20,
+    "cost": 50   
+   },
     "Кольчуга": {
       "type": "Средний",
       "ac_base": 13,
