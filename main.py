@@ -117,7 +117,7 @@ def choose():
     #у первого уровня всегда 2 
 
     #инициатива
-    player_list["initiative"] = True
+    player_list["initiative"] = player_list["stats_modifiers"]["dexterity"]
      
     #пасивная мудрость
     passive_wisdom = 10 + player_list["stats_modifiers"]["wisdom"]
