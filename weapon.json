@@ -56,6 +56,14 @@
       "weight": 6,
       "cost": 10
     },
+    "Боевой молот": {
+      "type": "Военное ближнее",
+      "damage": "1d8",
+      "damage_type": "Дробящий",
+      "properties": ["Двуручное"],
+      "weight": 6,
+      "cost": 10
+    },
     "Рукоятка": {
       "type": "Военное ближнее",
       "damage": "1d8",
@@ -67,6 +75,14 @@
   },
   "armor": {
     "Стёганый доспех": {
+      "type": "Лёгкий",
+      "ac_base": 11,
+      "dex_bonus": true,
+      "stealth_disadvantage": true,
+      "weight": 8,
+      "cost": 5
+    },
+    "Чешуйчатый доспех": {
       "type": "Лёгкий",
       "ac_base": 11,
       "dex_bonus": true,

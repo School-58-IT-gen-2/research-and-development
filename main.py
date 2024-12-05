@@ -127,12 +127,6 @@ def choose():
     #languages
     player_list["languages"]  = race_file["race"]["languages"] 
 
-    #spells
-    for i in class_file["class"]["spells"]:
-           keys = []
-           for j in i.keys():
-                keys.append(i[j])
-           player_list["spells_and_magic"][keys[0]] = keys[1]
 
     
 
