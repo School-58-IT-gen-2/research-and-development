@@ -48,6 +48,14 @@
       "weight": 3,
       "cost": 15
     },
+    "Меч": {
+      "type": "Военное ближнее",
+      "damage": "1d8",
+      "damage_type": "Рубящий",
+      "properties": ["Изящное", "Двуручное"],
+      "weight": 3,
+      "cost": 15
+    },
     "Боевой топор": {
       "type": "Военное ближнее",
       "damage": "1d8",
@@ -75,6 +83,14 @@
   },
   "armor": {
     "Стёганый доспех": {
+      "type": "Лёгкий",
+      "ac_base": 11,
+      "dex_bonus": true,
+      "stealth_disadvantage": true,
+      "weight": 8,
+      "cost": 5
+    },
+    "Легкие доспехи": {
       "type": "Лёгкий",
       "ac_base": 11,
       "dex_bonus": true,
