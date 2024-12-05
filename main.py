@@ -1,7 +1,7 @@
 import json
 import random
 clases = {'Следопыт':'pathfinder',"Варвар":"barbarian","Бард":"bard","Плут":"dodger","Друид":"druid","Колдун":"magician","Монах":"monk","Паладин":"paladin","Жрец":"priest","Маг":"warlock","Воин":"warrior","Волшебник":"wizzard"}
-races = {"Дварф":'dwarf',"Эльф":'elves','Полурослик':"halfling",'Человек':"human",'Драконорожденный':"dragonborn",'Гном':"gnom",'Полуэльф':"halfelf",'Полуорк':"halfork",'Тифлинг':"tiefling"}
+races = {"Дварф":'dwarf',"Эльф":'elves','Полурослик':"halfling",'Человек':"human",'Драконорожденный':"dragonborn",'Гном':"gnom",'Полуэльф':"halfelf",'Полуорк':"halforc",'Тифлинг':"tiefling"}
 
 with open('player.json', 'r', encoding="utf-8") as player_list: 
         player_list = json.load(player_list)
@@ -95,8 +95,12 @@ def choose():
         subrace_traits = subrace["traits"]
         for j in subrace_traits:
             traits.append(j)      
+
     for i in traits:
-        player_list["traits_and_abilities"].append(i)
+        keys = []
+        for j in i.keys():
+            keys.append(j)
+        player_list["traits_and_abilities"][i[keys[0]]] = i[keys[1]]
 
     #Health_points
     hit_dice = class_file["class"]["hit_dice"].split('d')
@@ -113,7 +117,7 @@ def choose():
     #у первого уровня всегда 2 
 
     #инициатива
-    player_list["initiative"] = player_list["stats_modifiers"]["dexterity"]
+    player_list["initiative"] = True
      
     #пасивная мудрость
     passive_wisdom = 10 + player_list["stats_modifiers"]["wisdom"]
@@ -130,8 +134,7 @@ def choose():
                 keys.append(i[j])
            player_list["spells_and_magic"][keys[0]] = keys[1]
 
-    #weapons
-    player_list["weapons"].append(race_file["starting_equipment"]["weapons"][random.randint(0,len(race_file["starting_equipment"]["weapons"])-1)])
+    
 
     
     #attack and damage
@@ -140,6 +143,9 @@ def choose():
     for i in  player_list["weapons"]:
         player_list["attack_and_damage_values"][i] = weapon_file["weapons"][i]
 
+    #weapons
+    weapon = race_file["starting_equipment"]["weapons"][random.randint(0,len(race_file["starting_equipment"]["weapons"])-1)]
+    player_list["weapons"][weapon] = weapon_file["weapons"][weapon]
 
     with open(f'spells.json', 'r', encoding="utf-8") as spells_file: 
         spells_file = json.load(spells_file) 
@@ -156,7 +162,7 @@ def choose():
     #inventory
     armor = race_file["starting_equipment"]["armor"]
     random.shuffle(armor)
-    player_list["inventory"].append(armor[0])
+    player_list["weapons"][armor[0]] = weapon_file["armor"][armor[0]]
     player_list["attack_and_damage_values"][armor[0]] = weapon_file["armor"][armor[0]]
 
     keys = []
@@ -176,6 +182,11 @@ def choose():
     random.shuffle(keys)
     player_list["worldview"] = race_file["race"]["worldview"][keys[0]]
     
+
+    #backstory
+    with open(f'lore.json', 'r', encoding="utf-8") as lore_file: 
+        lore_file = json.load(lore_file) 
+    player_list["backstory"] = lore_file["races"][rac][random.randint(0,len(lore_file["races"][rac])-1)]
 
     return player_list
 
