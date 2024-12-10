@@ -109,11 +109,6 @@ def choose(gender: str, rac: str, clas: str):
     for i in saving_throws:
          player_list["saving_throws"][i] = player_list["stats_modifiers"][i]
 
-
-    #death_saving_throws
-    #по дефолту 0
-
-
     #умения
     traits = race_file["race"]["traits"]
     if subrace != []:
@@ -153,15 +148,14 @@ def choose(gender: str, rac: str, clas: str):
     player_list["languages"]  = race_file["race"]["languages"] 
 
 
-
-    
-
-    
     #attack and damage
     with open(f'weapon.json', 'r', encoding="utf-8") as weapon_file: 
         weapon_file = json.load(weapon_file) 
+    print(weapon_file["armor"])
+    print(player_list["weapons"])
     for i in  player_list["weapons"]:
-        player_list["attack_and_damage_values"][i] = weapon_file["weapons"][i]
+        if i not in weapon_file["armor"]:
+            player_list["attack_and_damage_values"][i] = weapon_file["weapons"][i]
 
     #weapons
     weapon = race_file["starting_equipment"]["weapons"][random.randint(0,len(race_file["starting_equipment"]["weapons"])-1)]
@@ -178,11 +172,15 @@ def choose(gender: str, rac: str, clas: str):
     # for i in  player_list["spells_and_magic"].keys():
     #     player_list["attack_and_damage_values"][i]  = spells_file["spells"][i] 
 
+    print(weapon_file["armor"])
 
     #inventory
     armor = race_file["starting_equipment"]["armor"]
     random.shuffle(armor)
+    print(weapon_file["armor"])
+
     player_list["weapons"][armor[0]] = weapon_file["armor"][armor[0]]
+
     player_list["attack_and_damage_values"][armor[0]] = weapon_file["armor"][armor[0]]
 
     keys = []
@@ -207,7 +205,8 @@ def choose(gender: str, rac: str, clas: str):
     with open(f'lore.json', 'r', encoding="utf-8") as lore_file: 
         lore_file = json.load(lore_file) 
     player_list["backstory"] = lore_file["races"][rac][random.randint(0,len(lore_file["races"][rac])-1)]
-
+    print(weapon_file["armor"])
     return player_list
 
-    print(choose())
+print(choose(gender="M", rac="Человек", clas="Воин"))
+print(choose(gender="M", rac="Человек", clas="Воин"))
