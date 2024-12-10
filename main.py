@@ -49,6 +49,11 @@ def choose(gender: str, rac: str, clas: str):
     random.shuffle(names)
     player_list["name"] = names[0]
 
+    #surnames
+    surnames = race_file["race"]["woman_names"]
+    random.shuffle(surnames)
+    player_list["surname"] = surnames[0]
+
 
     #age
     race_file['race']["age"]
@@ -65,7 +70,7 @@ def choose(gender: str, rac: str, clas: str):
     subclass = class_file["class"]['subclasses']
     random.shuffle(subclass)
     subclass = subclass[0]
-    player_list["class"] = subclass['name']
+    player_list["class"] = class_file["class"]["name"]
 
     #stats:
     primary_ability = class_file["class"]["primary_ability"]
