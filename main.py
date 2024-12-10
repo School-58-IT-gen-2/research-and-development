@@ -151,8 +151,6 @@ def choose(gender: str, rac: str, clas: str):
     #attack and damage
     with open(f'weapon.json', 'r', encoding="utf-8") as weapon_file: 
         weapon_file = json.load(weapon_file) 
-    print(weapon_file["armor"])
-    print(player_list["weapons"])
     for i in  player_list["weapons"]:
         if i not in weapon_file["armor"]:
             player_list["attack_and_damage_values"][i] = weapon_file["weapons"][i]
@@ -172,12 +170,11 @@ def choose(gender: str, rac: str, clas: str):
     # for i in  player_list["spells_and_magic"].keys():
     #     player_list["attack_and_damage_values"][i]  = spells_file["spells"][i] 
 
-    print(weapon_file["armor"])
 
     #inventory
     armor = race_file["starting_equipment"]["armor"]
     random.shuffle(armor)
-    print(weapon_file["armor"])
+
 
     player_list["weapons"][armor[0]] = weapon_file["armor"][armor[0]]
 
@@ -207,6 +204,3 @@ def choose(gender: str, rac: str, clas: str):
     player_list["backstory"] = lore_file["races"][rac][random.randint(0,len(lore_file["races"][rac])-1)]
     print(weapon_file["armor"])
     return player_list
-
-print(choose(gender="M", rac="Человек", clas="Воин"))
-print(choose(gender="M", rac="Человек", clas="Воин"))
