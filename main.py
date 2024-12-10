@@ -20,7 +20,7 @@ class Create(BaseModel):
     clas: str
 
 @app.post("/register/")
-async def register_user(user: Create):
+async def register_user(gender: str, rac: str, clas: str):
     return choose(user.gender, user.rac, user.clas)
 
 
