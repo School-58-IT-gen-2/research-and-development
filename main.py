@@ -1,18 +1,38 @@
+from fastapi import FastAPI
+from pydantic import BaseModel
 import json
 import random
+
 clases = {'Следопыт':'pathfinder',"Варвар":"barbarian","Бард":"bard","Плут":"dodger","Друид":"druid","Колдун":"magician","Монах":"monk","Паладин":"paladin","Жрец":"priest","Маг":"warlock","Воин":"warrior","Волшебник":"wizzard"}
 races = {"Дварф":'dwarf',"Эльф":'elves','Полурослик':"halfling",'Человек':"human",'Драконорожденный':"dragonborn",'Гном':"gnom",'Полуэльф':"halfelf",'Полуорк':"halforc",'Тифлинг':"tiefling"}
 
 with open('player.json', 'r', encoding="utf-8") as player_list: 
         player_list = json.load(player_list)
-def choose():
-    print(f"choose male:(M/F)")
-    gender = input()
 
-    print(f"choose race:")
-    for i in races.keys():
-        print(i)
-    rac = races[input()]
+
+
+
+app = FastAPI()
+
+class Create(BaseModel):
+    gender: str
+    rac: str
+    clas: str
+
+@app.post("/register/")
+async def register_user(user: Create):
+    return choose(user.gender, user.rac, user.clas)
+
+
+
+def choose(gender: str, rac: str, clas: str):
+    # print(f"choose male:(M/F)")
+    # gender = input()
+
+    # print(f"choose race:")
+    # for i in races.keys():
+        # print(i)
+    rac = races[rac]
     with open(f'race/{rac}.json', 'r', encoding="utf-8") as race_file: 
         race_file = json.load(race_file)
     subrace = race_file["race"]['subraces']
@@ -35,10 +55,10 @@ def choose():
     player_list['age'] = random.randint(race_file['race']["age"]['min'],race_file['race']["age"]['max'])
 
 
-    print(f"choose class:")
-    for i in race_file['class_options']:
-        print(i)
-    clas = clases[input()]
+    # print(f"choose class:")
+    # for i in race_file['class_options']:
+    #     print(i)
+    clas = clases[clas]
 
     with open(f'classes/{clas}.json', 'r', encoding="utf-8") as class_file: 
         class_file = json.load(class_file)
@@ -185,4 +205,4 @@ def choose():
 
     return player_list
 
-print(choose())
+    print(choose())

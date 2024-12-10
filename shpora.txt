@@ -1,0 +1,14 @@
+docker
+docker build -t my-fastapi-app .
+docker run -d -p 8000:8000 my-fastapi-app
+
+docker stop $(docker ps -q)
+docker rm $(docker ps -a -q)
+docker rmi $(docker images -q)
+docker system prune -a --volumes
+
+
+
+
+fast api
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
