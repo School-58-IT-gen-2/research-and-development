@@ -202,5 +202,5 @@ def choose(gender: str, rac: str, clas: str):
     with open(f'lore.json', 'r', encoding="utf-8") as lore_file: 
         lore_file = json.load(lore_file) 
     player_list["backstory"] = lore_file["races"][rac][random.randint(0,len(lore_file["races"][rac])-1)]
-    print(weapon_file["armor"])
+    # print(weapon_file["armor"])
     return player_list
