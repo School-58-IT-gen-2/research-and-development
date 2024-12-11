@@ -13,7 +13,7 @@ data = {
 }
 
 # Отправляем POST запрос на endpoint /register/
-response = client.post("/register/", json=data)
+response = client.post("/register/", params=data)
 
 # Печатаем статус код и ответ
 print("Response status code:", response.status_code)
