@@ -164,9 +164,10 @@ def choose(gender: str, rac: str, clas: str):
 
     if rac in spells_file["races"].keys():
          player_list["spells_and_magic"] = spells_file["races"][rac]
-
-    if subrace["name"] in spells_file["races"].keys():
-         player_list["spells_and_magic"] = spells_file["races"][subrace["name"]]
+         
+    if subrace != []:
+        if subrace["name"] in spells_file["races"].keys():
+            player_list["spells_and_magic"] = spells_file["races"][subrace["name"]]
 
     if clas in spells_file["classes"].keys():
          player_list["spells_and_magic"] = spells_file["classes"][clas]
