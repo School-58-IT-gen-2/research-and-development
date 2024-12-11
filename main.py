@@ -165,10 +165,15 @@ def choose(gender: str, rac: str, clas: str):
     if rac in spells_file["races"].keys():
          player_list["spells_and_magic"] = spells_file["races"][rac]
 
-    if clas in spells_file["races"].keys():
+    if subrace["name"] in spells_file["races"].keys():
+         player_list["spells_and_magic"] = spells_file["races"][subrace["name"]]
+
+    if clas in spells_file["classes"].keys():
          player_list["spells_and_magic"] = spells_file["classes"][clas]
     # for i in  player_list["spells_and_magic"].keys():
     #     player_list["attack_and_damage_values"][i]  = spells_file["spells"][i] 
+
+    #spells
 
 
     #inventory
