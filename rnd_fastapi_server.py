@@ -1,12 +1,17 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import json
 import random
+import os 
 
 clases = {'Следопыт':'pathfinder',"Варвар":"barbarian","Бард":"bard","Плут":"dodger","Друид":"druid","Колдун":"magician","Монах":"monk","Паладин":"paladin","Жрец":"priest","Маг":"warlock","Воин":"warrior","Волшебник":"wizzard"}
 races = {"Дварф":'dwarf',"Эльф":'elves','Полурослик':"halfling",'Человек':"human",'Драконорожденный':"dragonborn",'Гном':"gnom",'Полуэльф':"halfelf",'Полуорк':"halforc",'Тифлинг':"tiefling"}
 
-with open(r"research-and-development\player.json", 'r', encoding="utf-8") as player_list: 
+
+
+
+
+with open("player.json", 'r', encoding="utf-8") as player_list: 
         player_list = json.load(player_list)
 
 
@@ -18,8 +23,11 @@ class Create(BaseModel):
     clas: str
 
 @app.post("/create-character-list")
-async def create_character_list(gender: str, rac: str, clas: str):
-    return choose(gender, rac, clas)
+async def create_character_list(data: Create):
+    try:
+        return choose(data.gender, data.rac, data.clas)
+    except Exception as e:
+        raise HTTPException(status_code=422, detail=str(e))
 
 
 
@@ -31,8 +39,13 @@ def choose(gender: str, rac: str, clas: str):
     # for i in races.keys():
         # print(i)
     rac = races[rac]
-    with open(f'research-and-development\\race\\{rac}.json', 'r', encoding="utf-8") as race_file: 
+
+    base_path = os.path.join('/app', "race")
+    race_file_path = os.path.join(base_path, f"{rac}.json")
+
+    with open(race_file_path, 'r', encoding="utf-8") as race_file: 
         race_file = json.load(race_file)
+
     subrace = race_file["race"]['subraces']
     if subrace != []:
         random.shuffle(subrace)
@@ -63,8 +76,12 @@ def choose(gender: str, rac: str, clas: str):
     #     print(i)
     clas = clases[clas]
 
-    with open(f'research-and-development\\classes\\{clas}.json', 'r', encoding="utf-8") as class_file: 
+    base_path = os.path.join('/app', "classes")
+    class_file_path = os.path.join(base_path, f"{clas}.json")
+
+    with open(class_file_path, 'r', encoding="utf-8") as class_file: 
         class_file = json.load(class_file)
+
     subclass = class_file["class"]['subclasses']
     random.shuffle(subclass)
     subclass = subclass[0]
@@ -147,8 +164,12 @@ def choose(gender: str, rac: str, clas: str):
 
 
     #attack and damage
-    with open(r'research-and-development\weapon.json', 'r', encoding="utf-8") as weapon_file: 
+
+    weapon_file_path = os.path.join("weapon.json")
+
+    with open(weapon_file_path, 'r', encoding="utf-8") as weapon_file: 
         weapon_file = json.load(weapon_file) 
+
     for i in  player_list["weapons"]:
         if i not in weapon_file["armor"]:
             player_list["attack_and_damage_values"][i] = weapon_file["weapons"][i]
@@ -157,7 +178,9 @@ def choose(gender: str, rac: str, clas: str):
     weapon = race_file["starting_equipment"]["weapons"][random.randint(0,len(race_file["starting_equipment"]["weapons"])-1)]
     player_list["weapons"][weapon] = weapon_file["weapons"][weapon]
 
-    with open(r'research-and-development\spells.json', 'r', encoding="utf-8") as spells_file: 
+    spells_file_path = os.path.join("spells.json")
+
+    with open(spells_file_path, 'r', encoding="utf-8") as spells_file: 
         spells_file = json.load(spells_file) 
 
     if rac in spells_file["races"].keys():
@@ -203,7 +226,10 @@ def choose(gender: str, rac: str, clas: str):
     
 
     #backstory
-    with open(r'research-and-development\lore.json', 'r', encoding="utf-8") as lore_file: 
+
+    lore_file_path = os.path.join("lore.json")
+
+    with open(lore_file_path, 'r', encoding="utf-8") as lore_file: 
         lore_file = json.load(lore_file) 
     player_list["backstory"] = lore_file["races"][rac][random.randint(0,len(lore_file["races"][rac])-1)]
     # print(weapon_file["armor"])
