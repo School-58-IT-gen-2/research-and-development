@@ -2,9 +2,13 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 import json
 import random
+from db_source import DBSource
 
 clases = {'Следопыт':'pathfinder',"Варвар":"barbarian","Бард":"bard","Плут":"dodger","Друид":"druid","Колдун":"magician","Монах":"monk","Паладин":"paladin","Жрец":"priest","Маг":"warlock","Воин":"warrior","Волшебник":"wizzard"}
 races = {"Дварф":'dwarf',"Эльф":'elves','Полурослик':"halfling",'Человек':"human",'Драконорожденный':"dragonborn",'Гном':"gnom",'Полуэльф':"halfelf",'Полуорк':"halforc",'Тифлинг':"tiefling"}
+
+supabase = DBSource('https://supabase.questhub.pro/',"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ewogICJyb2xlIjogImFub24iLAogICJpc3MiOiAic3VwYWJhc2UiLAogICJpYXQiOiAxNzMwMzIyMDAwLAogICJleHAiOiAxODg4MDg4NDAwCn0.oaSCoTPKV6H1XJ_7eWgl67oxnfav4KnNXu8KUkNROJs")
+supabase.connect()
 
 with open('player.json', 'r', encoding="utf-8") as player_list: 
         player_list = json.load(player_list)
@@ -13,6 +17,8 @@ with open('player.json', 'r', encoding="utf-8") as player_list:
 
 
 app = FastAPI()
+
+
 
 class Create(BaseModel):
     gender: str
@@ -33,8 +39,9 @@ def choose(gender: str, rac: str, clas: str):
     # for i in races.keys():
         # print(i)
     rac = races[rac]
-    with open(f'race/{rac}.json', 'r', encoding="utf-8") as race_file: 
-        race_file = json.load(race_file)
+    race_file = supabase.get_race_data_by_name(rac)
+    # with open(f'race/{rac}.json', 'r', encoding="utf-8") as race_file: 
+    #     race_file = json.load(race_file)
     subrace = race_file["race"]['subraces']
     if subrace != []:
         random.shuffle(subrace)
@@ -64,9 +71,9 @@ def choose(gender: str, rac: str, clas: str):
     # for i in race_file['class_options']:
     #     print(i)
     clas = clases[clas]
-
-    with open(f'classes/{clas}.json', 'r', encoding="utf-8") as class_file: 
-        class_file = json.load(class_file)
+    class_file = supabase.get_class_data_by_name(clas)
+    # with open(f'classes/{clas}.json', 'r', encoding="utf-8") as class_file: 
+    #     class_file = json.load(class_file)
     subclass = class_file["class"]['subclasses']
     random.shuffle(subclass)
     subclass = subclass[0]
@@ -149,8 +156,10 @@ def choose(gender: str, rac: str, clas: str):
 
 
     #attack and damage
-    with open(f'weapon.json', 'r', encoding="utf-8") as weapon_file: 
-        weapon_file = json.load(weapon_file) 
+    class_file = supabase.get_race_data_by_name(clas)
+    weapon_file = supabase.get_weapon_data()
+    # with open(f'weapon.json', 'r', encoding="utf-8") as weapon_file: 
+    #     weapon_file = json.load(weapon_file) 
     for i in  player_list["weapons"]:
         if i not in weapon_file["armor"]:
             player_list["attack_and_damage_values"][i] = weapon_file["weapons"][i]
@@ -159,8 +168,9 @@ def choose(gender: str, rac: str, clas: str):
     weapon = race_file["starting_equipment"]["weapons"][random.randint(0,len(race_file["starting_equipment"]["weapons"])-1)]
     player_list["weapons"][weapon] = weapon_file["weapons"][weapon]
 
-    with open(f'spells.json', 'r', encoding="utf-8") as spells_file: 
-        spells_file = json.load(spells_file) 
+    spells_file = supabase.get_spells_data()
+    # with open(f'spells.json', 'r', encoding="utf-8") as spells_file: 
+    #     spells_file = json.load(spells_file) 
 
     if rac in spells_file["races"].keys():
          player_list["spells_and_magic"] = spells_file["races"][rac]
@@ -205,8 +215,9 @@ def choose(gender: str, rac: str, clas: str):
     
 
     #backstory
-    with open(f'lore.json', 'r', encoding="utf-8") as lore_file: 
-        lore_file = json.load(lore_file) 
+    lore_file = supabase.get_lore_data()
+    # with open(f'lore.json', 'r', encoding="utf-8") as lore_file: 
+    #     lore_file = json.load(lore_file) 
     player_list["backstory"] = lore_file["races"][rac][random.randint(0,len(lore_file["races"][rac])-1)]
     # print(weapon_file["armor"])
     return player_list
