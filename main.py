@@ -4,6 +4,8 @@ import json
 import random
 from db_source import DBSource
 import uvicorn
+from dotenv import load_dotenv
+import os
 
 
 if __name__ == "__main__":
@@ -18,13 +20,14 @@ if __name__ == "__main__":
 clases = {'Следопыт':'pathfinder',"Варвар":"barbarian","Бард":"bard","Плут":"dodger","Друид":"druid","Колдун":"magician","Монах":"monk","Паладин":"paladin","Жрец":"priest","Маг":"warlock","Воин":"warrior","Волшебник":"wizzard"}
 races = {"Дварф":'dwarf',"Эльф":'elves','Полурослик':"halfling",'Человек':"human",'Драконорожденный':"dragonborn",'Гном':"gnom",'Полуэльф':"halfelf",'Полуорк':"halforc",'Тифлинг':"tiefling"}
 
-supabase = DBSource('https://supabase.questhub.pro/',"")
+load_dotenv()
+supabase = DBSource(os.getenv("SUPABASE_URL"),os.getenv("SUPABASE_KEY"))
 supabase.connect()
 
-with open('player.json', 'r', encoding="utf-8") as player_list: 
-        player_list = json.load(player_list)
+# with open('player.json', 'r', encoding="utf-8") as player_list: 
+#         player_list = json.load(player_list)
 
-
+player_list = supabase.get_player_data()
 
 
 app = FastAPI()

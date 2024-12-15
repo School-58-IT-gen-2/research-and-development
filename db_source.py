@@ -3,18 +3,19 @@ from pydantic import SecretStr
 from supabase.client import ClientOptions
 from supabase import create_client, Client
 import json
+import os
 
 
 class DBSource():
     """Адаптер для работы с базой данных"""
 
-    def __init__(self, url: str, key: SecretStr):
+    def __init__(self, url: str, key: str):
         """
         :param str url: Ссылка на supabase
         :param str key: Ключ от supabase
         """
         self.__url = url
-        self.__key = key.get_secret_value()
+        self.__key = key
 
     def connect(self) -> None:
         """Подключение к БД"""
@@ -81,6 +82,10 @@ class DBSource():
         ]
     def get_weapon_data(self) -> list:
         return dict(self.__supabase.table("weapon").select().eq("id", 1).execute())[
+            "data"
+        ]
+    def get_player_data(self) -> list:
+        return dict(self.__supabase.table("character_list").select().eq("id", 11).execute())[
             "data"
         ]
     def get_spells_data(self) -> list:
