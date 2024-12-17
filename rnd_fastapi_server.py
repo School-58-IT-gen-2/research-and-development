@@ -355,16 +355,16 @@ def choose(gender: str, rac: str, clas: str):
 
 
     #stat_modifiers 
-    stats_modifiers = player_list["stats_modifiers"]
+    stats_modifiers = player_list["stat_modifiers"]
     for i in stats.keys():
         stats_modifiers[i] = (stats[i] - 10)//2
     player_list["stats"] = stats
-    player_list["stats_modifiers"] = stats_modifiers
+    player_list["stat_modifiers"] = stats_modifiers
 
     #saving_throws
-    saving_throws = class_file["class"]["saving_throws"]
+    saving_throws = class_file["class"]["ability_saving_throws"]
     for i in saving_throws:
-         player_list["saving_throws"][i] = player_list["stats_modifiers"][i]
+         player_list["ability_saving_throws"][i] = player_list["stat_modifiers"][i]
 
     #умения
     traits = race_file["race"]["traits"]
@@ -381,7 +381,7 @@ def choose(gender: str, rac: str, clas: str):
 
     #Health_points
     hit_dice = class_file["class"]["hit_dice"].split('d')
-    health_points = random.randint(1,int(hit_dice[1])) + player_list["stats_modifiers"]["constitution"]
+    health_points = random.randint(1,int(hit_dice[1])) + player_list["stat_modifiers"]["constitution"]
     player_list["health_points"] = health_points
     
     #speed
@@ -394,10 +394,10 @@ def choose(gender: str, rac: str, clas: str):
     #у первого уровня всегда 2 
 
     #инициатива
-    player_list["initiative"] = player_list["stats_modifiers"]["dexterity"]
+    player_list["initiative"] = player_list["stat_modifiers"]["dexterity"]
      
     #пасивная мудрость
-    passive_wisdom = 10 + player_list["stats_modifiers"]["wisdom"]
+    passive_wisdom = 10 + player_list["stat_modifiers"]["wisdom"]
     if  'восприятие' in player_list['skills']:
          passive_wisdom += player_list['master_bonus']
 
