@@ -76,7 +76,7 @@ class DBSource():
             "data"
         ]
     
-    def get_clas_data_by_name(self,name: str) -> list:
+    def get_class_data_by_name(self,name: str) -> list:
         return dict(self.__supabase.table("classes").select().eq("name", name).execute())[
             "data"
         ]
