@@ -167,30 +167,30 @@ else:
 
 
 
-gender = ['M', 'W']
-# races = ['dwarf','elves',"halfling","human","dragonborn","gnom","halfelf","halforc","tiefling"]
-races = {"Дварф":'dwarf',"Эльф":'elves','Полурослик':"halfling",'Человек':"human",'Драконорожденный':"dragonborn",'Гном':"gnom",'Полуэльф':"halfelf",'Полуорк':"halforc",'Тифлинг':"tiefling"}
+# gender = ['M', 'W']
+# # races = ['dwarf','elves',"halfling","human","dragonborn","gnom","halfelf","halforc","tiefling"]
+# races = {"Дварф":'dwarf',"Эльф":'elves','Полурослик':"halfling",'Человек':"human",'Драконорожденный':"dragonborn",'Гном':"gnom",'Полуэльф':"halfelf",'Полуорк':"halforc",'Тифлинг':"tiefling"}
 
-keys = list(races.keys())
+# keys = list(races.keys())
 
 
-for g in gender:
-    for r in keys:
-        with open(f"race/{races.get(r)}.json", "r", encoding="utf-8") as file:
-            d = json.load(file)
+# for g in gender:
+#     for r in keys:
+#         with open(f"race/{races.get(r)}.json", "r", encoding="utf-8") as file:
+#             d = json.load(file)
 
-        class_options = d.get('class_options', [])
-        for c in class_options:
-            for _ in range(5):
-                data = {
-                            "gender": f"{g}",
-                            "rac": f"{r}",
-                            "clas": f"{c}"
-                        }
-                response = requests.post(url, json=data)
+#         class_options = d.get('class_options', [])
+#         for c in class_options:
+#             for _ in range(5):
+#                 data = {
+#                             "gender": f"{g}",
+#                             "rac": f"{r}",
+#                             "clas": f"{c}"
+#                         }
+#                 response = requests.post(url, json=data)
 
            
-                print(response.status_code, g, r, c)
-            # print(g, r, c)
+#                 print(response.status_code, g, r, c)
+#             # print(g, r, c)
 
-print('end')
+# print('end')

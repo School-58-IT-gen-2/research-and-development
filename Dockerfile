@@ -1,17 +1,13 @@
-# Используем образ Python 3.10
 FROM python:3.10-slim
 
-# Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Копируем файлы в контейнер
 COPY . /app
+COPY requirements.txt .
+COPY .env .
 
-# Устанавливаем зависимости
-RUN pip install --no-cache-dir fastapi uvicorn
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Открываем порт 8000
 EXPOSE 8000
 
-# Запуск приложения
 CMD ["uvicorn", "rnd_fastapi_server:app", "--host", "0.0.0.0", "--port", "8000"]
