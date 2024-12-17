@@ -327,7 +327,7 @@ def choose(gender: str, rac: str, clas: str):
     subclass = class_file["class"]['subclasses']
     random.shuffle(subclass)
     subclass = subclass[0]
-    player_list["class"] = class_file["class"]["name"]
+    player_list["character_class"] = class_file["class"]["name"]
 
     #stats:
     primary_ability = class_file["class"]["primary_ability"]
@@ -382,10 +382,10 @@ def choose(gender: str, rac: str, clas: str):
     #Health_points
     hit_dice = class_file["class"]["hit_dice"].split('d')
     health_points = random.randint(1,int(hit_dice[1])) + player_list["stat_modifiers"]["constitution"]
-    player_list["health_points"] = health_points
+    player_list["hp"] = health_points
     
     #speed
-    player_list['travel_speed'] = race_file['race']["speed"]["walk"]
+    player_list['speed'] = race_file['race']["speed"]["walk"]
 
     #skills
     player_list["skills"] = class_file['class']["skills"]
@@ -397,9 +397,10 @@ def choose(gender: str, rac: str, clas: str):
     player_list["initiative"] = player_list["stat_modifiers"]["dexterity"]
      
     #пасивная мудрость
-    passive_wisdom = 10 + player_list["stat_modifiers"]["wisdom"]
+    passive_perception = 10 + player_list["stat_modifiers"]["wisdom"]
     if  'восприятие' in player_list['skills']:
-         passive_wisdom += player_list['master_bonus']
+         passive_perception += player_list['ownership_bonus']
+    player_list["passive_perception"] = passive_perception
 
     #languages
     player_list["languages"]  = race_file["race"]["languages"] 
@@ -410,27 +411,27 @@ def choose(gender: str, rac: str, clas: str):
     weapon_file = supabase.get_weapon_data()
     # with open(f'weapon.json', 'r', encoding="utf-8") as weapon_file: 
     #     weapon_file = json.load(weapon_file) 
-    for i in  player_list["weapons"]:
+    for i in  player_list["weapons_and_equipment"]:
         if i not in weapon_file["armor"]:
             player_list["attack_and_damage_values"][i] = weapon_file["weapons"][i]
 
     #weapons
     weapon = race_file["starting_equipment"]["weapons"][random.randint(0,len(race_file["starting_equipment"]["weapons"])-1)]
-    player_list["weapons"][weapon] = weapon_file["weapons"][weapon]
+    player_list["weapons_and_equipment"][weapon] = weapon_file["weapons"][weapon]
 
     spells_file = supabase.get_spells_data()
     # with open(f'spells.json', 'r', encoding="utf-8") as spells_file: 
     #     spells_file = json.load(spells_file) 
 
     if rac in spells_file["races"].keys():
-         player_list["spells_and_magic"] = spells_file["races"][rac]
+         player_list["spells"] = spells_file["races"][rac]
          
     if subrace != []:
         if subrace["name"] in spells_file["races"].keys():
-            player_list["spells_and_magic"] = spells_file["races"][subrace["name"]]
+            player_list["spells"] = spells_file["races"][subrace["name"]]
 
     if clas in spells_file["classes"].keys():
-         player_list["spells_and_magic"] = spells_file["classes"][clas]
+         player_list["spells"] = spells_file["classes"][clas]
     # for i in  player_list["spells_and_magic"].keys():
     #     player_list["attack_and_damage_values"][i]  = spells_file["spells"][i] 
 
@@ -442,7 +443,7 @@ def choose(gender: str, rac: str, clas: str):
     random.shuffle(armor)
 
 
-    player_list["weapons"][armor[0]] = weapon_file["armor"][armor[0]]
+    player_list["weapons_and_equipment"][armor[0]] = weapon_file["armor"][armor[0]]
 
     player_list["attack_and_damage_values"][armor[0]] = weapon_file["armor"][armor[0]]
 
