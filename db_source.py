@@ -74,28 +74,28 @@ class DBSource():
     def get_race_data_by_name(self,name: str) -> list:
         return dict(self.__supabase.table("races").select().eq("name", name).execute())[
             "data"
-        ]
+        ][0]
     
     def get_class_data_by_name(self,name: str) -> list:
         return dict(self.__supabase.table("classes").select().eq("name", name).execute())[
             "data"
-        ]
+        ][0]
     def get_weapon_data(self) -> list:
         return dict(self.__supabase.table("weapon").select().eq("id", 1).execute())[
             "data"
-        ]
+        ][0]
     def get_player_data(self) -> list:
         return dict(self.__supabase.table("character_list").select().eq("id", 11).execute())[
             "data"
-        ]
+        ][0]
     def get_spells_data(self) -> list:
-        return dict(self.__supabase.table("weapon").select().eq("id", 1).execute())[
+        return dict(self.__supabase.table("spells").select().eq("id", 1).execute())[
             "data"
-        ]
+        ][0]
     def get_lore_data(self) -> list:
         return dict(self.__supabase.table("lore").select().eq("id", 1).execute())[
             "data"
-        ]
+        ][0]
     
     def create_new_race(self,race :str) -> None:
         with open(f'race/{race}.json', 'r', encoding="utf-8") as race_file: 
