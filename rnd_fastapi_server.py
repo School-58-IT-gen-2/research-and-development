@@ -362,7 +362,7 @@ def choose(gender: str, rac: str, clas: str):
     player_list["stat_modifiers"] = stats_modifiers
 
     #saving_throws
-    saving_throws = class_file["class"]["ability_saving_throws"]
+    saving_throws = class_file["class"]["saving_throws"]
     for i in saving_throws:
          player_list["ability_saving_throws"][i] = player_list["stat_modifiers"][i]
 
