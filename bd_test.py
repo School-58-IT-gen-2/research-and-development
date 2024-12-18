@@ -18,3 +18,5 @@ supabase.connect()
 print(supabase.get_lore_data())
 print(supabase.get_player_data())
 print(supabase.get_spells_data())
+
+print()
