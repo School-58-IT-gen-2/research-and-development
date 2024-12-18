@@ -251,15 +251,9 @@ import os
 clases = {'Следопыт':'pathfinder',"Варвар":"barbarian","Бард":"bard","Плут":"dodger","Друид":"druid","Колдун":"magician","Монах":"monk","Паладин":"paladin","Жрец":"priest","Маг":"warlock","Воин":"warrior","Волшебник":"wizzard"}
 races = {"Дварф":'dwarf',"Эльф":'elves','Полурослик':"halfling",'Человек':"human",'Драконорожденный':"dragonborn",'Гном':"gnom",'Полуэльф':"halfelf",'Полуорк':"halforc",'Тифлинг':"tiefling"}
 
-load_dotenv()
-supabase = DBSource(os.getenv("SUPABASE_URL"),os.getenv("SUPABASE_KEY"))
-supabase.connect()
 
 # with open('player.json', 'r', encoding="utf-8") as player_list: 
 #         player_list = json.load(player_list)
-
-player_list = supabase.get_player_data()
-
 
 app = FastAPI()
 
@@ -282,6 +276,11 @@ async def register_user(create: Create):
 
 
 def choose(gender: str, rac: str, clas: str):
+    load_dotenv()
+    supabase = DBSource(os.getenv("SUPABASE_URL"),os.getenv("SUPABASE_KEY"))
+    supabase.connect()
+    player_list = supabase.get_player_data()
+
     # print(f"choose male:(M/F)")
     # gender = input()
 
@@ -451,7 +450,9 @@ def choose(gender: str, rac: str, clas: str):
     for j in race_file["starting_equipment"]["packs"].keys():
         keys.append(j)
     random.shuffle(keys)
+    print(race_file["starting_equipment"]["packs"][keys[0]])
     for i in race_file["starting_equipment"]["packs"][keys[0]]:
+         print(i)
          player_list["inventory"].append(i)
     tools = race_file["starting_equipment"]["tools"]
     random.shuffle(tools)
@@ -472,3 +473,6 @@ def choose(gender: str, rac: str, clas: str):
     player_list["backstory"] = lore_file["races"][rac][random.randint(0,len(lore_file["races"][rac])-1)]
     # print(weapon_file["armor"])
     return player_list
+print(choose("M","Тифлинг","Жрец"))
+for i in range(10):
+    print(choose("M","Тифлинг","Жрец"))
