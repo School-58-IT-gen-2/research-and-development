@@ -149,10 +149,10 @@ import requests
 # URL вашего FastAPI сервера
 url = "http://localhost:8000/create-character-list"
 
-# Данные для отправки
+
 # data = {
 #     "gender": "M",
-#     "rac": "Тифлинг",
+#     "rac": "Полурослик",
 #     "clas": "Жрец"
 # }
 
