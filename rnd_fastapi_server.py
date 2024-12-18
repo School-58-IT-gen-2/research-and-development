@@ -471,3 +471,4 @@ def choose(gender: str, rac: str, clas: str):
     player_list["backstory"] = lore_file["races"][rac][random.randint(0,len(lore_file["races"][rac])-1)]
     # print(weapon_file["armor"])
     return player_list
+
