@@ -450,9 +450,7 @@ def choose(gender: str, rac: str, clas: str):
     for j in race_file["starting_equipment"]["packs"].keys():
         keys.append(j)
     random.shuffle(keys)
-    print(race_file["starting_equipment"]["packs"][keys[0]])
     for i in race_file["starting_equipment"]["packs"][keys[0]]:
-         print(i)
          player_list["inventory"].append(i)
     tools = race_file["starting_equipment"]["tools"]
     random.shuffle(tools)
@@ -473,6 +471,3 @@ def choose(gender: str, rac: str, clas: str):
     player_list["backstory"] = lore_file["races"][rac][random.randint(0,len(lore_file["races"][rac])-1)]
     # print(weapon_file["armor"])
     return player_list
-print(choose("M","Тифлинг","Жрец"))
-for i in range(10):
-    print(choose("M","Тифлинг","Жрец"))
