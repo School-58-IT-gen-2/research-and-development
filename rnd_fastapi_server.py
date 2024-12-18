@@ -394,7 +394,7 @@ def choose(gender: str, rac: str, clas: str):
     #у первого уровня всегда 2 
 
     #инициатива
-    player_list["initiative"] = player_list["stat_modifiers"]["dexterity"]
+    player_list["initiative"] = 0
      
     #пасивная мудрость
     passive_perception = 10 + player_list["stat_modifiers"]["wisdom"]
