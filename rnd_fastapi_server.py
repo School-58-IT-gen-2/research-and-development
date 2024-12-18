@@ -451,7 +451,8 @@ def choose(gender: str, rac: str, clas: str):
     for j in race_file["starting_equipment"]["packs"].keys():
         keys.append(j)
     random.shuffle(keys)
-    player_list["inventory"].append(race_file["starting_equipment"]["packs"][keys[0]])
+    for i in race_file["starting_equipment"]["packs"][keys[0]]:
+         player_list["inventory"].append(i)
     tools = race_file["starting_equipment"]["tools"]
     random.shuffle(tools)
     player_list["inventory"].append(tools[0])
