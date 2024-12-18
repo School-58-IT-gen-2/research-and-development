@@ -407,10 +407,7 @@ def choose(gender: str, rac: str, clas: str):
 
 
     #attack and damage
-<<<<<<< HEAD
     # class_file = supabase.get_race_data_by_name(clas)
-=======
->>>>>>> 8f75eb891d9e1ca26572e51346aa880b95b632ba
     weapon_file = supabase.get_weapon_data()
     # with open(f'weapon.json', 'r', encoding="utf-8") as weapon_file: 
     #     weapon_file = json.load(weapon_file) 
@@ -475,4 +472,3 @@ def choose(gender: str, rac: str, clas: str):
     player_list["backstory"] = lore_file["races"][rac][random.randint(0,len(lore_file["races"][rac])-1)]
     # print(weapon_file["armor"])
     return player_list
-
