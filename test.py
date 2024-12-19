@@ -150,64 +150,64 @@ import requests
 url = "http://localhost:8000/create-character-list"
 
 
-# data = {
-#     "gender": "M",
-#     "rac": "Полурослик",
-#     "clas": "Жрец"
-# }
+data = {
+    "gender": "M",
+    "rac": "Полурослик",
+    "clas": "Жрец"
+}
 
-# # Отправка POST запроса
-# response = requests.post(url, json=data)
+# Отправка POST запроса
+response = requests.post(url, json=data)
 
-# # Проверка ответа
-# if response.status_code == 200:
-#     print("Response:", response.json())
-# else:
-#     print("Error:", response.status_code, response.text)
-
-
+# Проверка ответа
+if response.status_code == 200:
+    print("Response:", response.json())
+else:
+    print("Error:", response.status_code, response.text)
 
 
 
 
-gender = ['M', 'W']
-# races = ['dwarf','elves',"halfling","human","dragonborn","gnom","halfelf","halforc","tiefling"]
-races = {"Дварф":'dwarf',"Эльф":'elves','Полурослик':"halfling",'Человек':"human",'Драконорожденный':"dragonborn",'Гном':"gnom",'Полуэльф':"halfelf",'Полуорк':"halforc",'Тифлинг':"tiefling"}
 
-keys = list(races.keys())
 
-start_time = time.time()
-n = 0
-for g in gender:
-    for r in keys:
-        with open(f"not_in_use/race/{races.get(r)}.json", "r", encoding="utf-8") as file:
-            d = json.load(file)
+# gender = ['M', 'W']
+# # races = ['dwarf','elves',"halfling","human","dragonborn","gnom","halfelf","halforc","tiefling"]
+# races = {"Дварф":'dwarf',"Эльф":'elves','Полурослик':"halfling",'Человек':"human",'Драконорожденный':"dragonborn",'Гном':"gnom",'Полуэльф':"halfelf",'Полуорк':"halforc",'Тифлинг':"tiefling"}
 
-        class_options = d.get('class_options', [])
-        if not class_options:
-            print(f"Warning: No class options found in {races.get(r)}.json")
-        for c in class_options:
-            for _ in range(5):
-                data = {
-                            "gender": f"{g}",
-                            "rac": f"{r}",
-                            "clas": f"{c}"
-                        }
+# keys = list(races.keys())
+
+# start_time = time.time()
+# n = 0
+# for g in gender:
+#     for r in keys:
+#         with open(f"C:/Users/Artem/Desktop/RnD/research-and-development/not_in_use/race/{races.get(r)}.json", "r", encoding="utf-8") as file:
+#             d = json.load(file)
+
+#         class_options = d.get('class_options', [])
+#         if not class_options:
+#             print(f"Warning: No class options found in {races.get(r)}.json")
+#         for c in class_options:
+#             for _ in range(5):
+#                 data = {
+#                             "gender": f"{g}",
+#                             "rac": f"{r}",
+#                             "clas": f"{c}"
+#                         }
                 
-                response = requests.post(url, json=data)
+#                 response = requests.post(url, json=data)
 
                 
-                print(response.status_code, g, r, c)
-                n += 1
-            # print(g, r, c)
+#                 print(response.status_code, g, r, c)
+#                 n += 1
+#             # print(g, r, c)
 
 
-end_time = time.time()
+# end_time = time.time()
 
-# Общее время выполнения
-execution_time = end_time - start_time
+# # Общее время выполнения
+# execution_time = end_time - start_time
 
-# Результат деления времени на n
-print('кол-во секунд на весь тест', execution_time, 'кол-во секунд на один лист', execution_time / n, 'кол-во листов персонажа', n)
-print('end')
+# # Результат деления времени на n
+# print('кол-во секунд на весь тест', execution_time, 'кол-во секунд на один лист', execution_time / n, 'кол-во листов персонажа', n)
+# print('end')
 

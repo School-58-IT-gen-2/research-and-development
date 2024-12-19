@@ -85,9 +85,9 @@ class DBSource():
             "data"
         ][0]
     def get_player_data(self) -> list:
-        return dict(self.__supabase.table("character_list").select().eq("id", 11).execute())[
-            "data"
-        ][0]
+        return dict(self.__supabase.table("character_list").select().eq("id", 11).execute())["data"][0]
+    
+    
     def get_spells_data(self) -> list:
         return dict(self.__supabase.table("spells").select().eq("id", 1).execute())[
             "data"
