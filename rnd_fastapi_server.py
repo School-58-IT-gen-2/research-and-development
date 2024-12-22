@@ -380,7 +380,7 @@ def choose(gender: str, rac: str, clas: str):
 
     #Health_points
     hit_dice = class_file["class"]["hit_dice"].split('d')
-    health_points = random.randint(1,int(hit_dice[1])) + player_list["stat_modifiers"]["constitution"]
+    health_points = hit_dice[1] + player_list["stat_modifiers"]["constitution"]
     player_list["hp"] = health_points
     
     #speed
