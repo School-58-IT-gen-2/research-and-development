@@ -245,7 +245,7 @@ from db_source import DBSource
 import uvicorn
 from dotenv import load_dotenv
 import os
-import tg_bot
+# import tg_bot
 
 
 clases = {'Следопыт':'pathfinder',"Варвар":"barbarian","Бард":"bard","Плут":"dodger","Друид":"druid","Колдун":"magician","Монах":"monk","Паладин":"paladin","Жрец":"priest","Маг":"warlock","Воин":"warrior","Волшебник":"wizzard"}
