@@ -349,8 +349,8 @@ def choose(gender: str, rac: str, clas: str):
          stats[i] += ability_bonuses[i]
     if subrace != []:
         ability_bonuses = subrace["ability_bonuses"]
-    for i in ability_bonuses.keys():
-         stats[i] += ability_bonuses[i]
+        for i in ability_bonuses.keys():
+            stats[i] += ability_bonuses[i]
 
 
     #stat_modifiers 
