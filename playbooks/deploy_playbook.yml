@@ -5,7 +5,7 @@
       git:
         repo: https://github.com/School-58-IT-gen-2/research-and-development.git
         dest: /projects/dnd/research-and-development
-        version: cicd
+        version: main
 
     - name: Build Docker image
       command: docker build -t my-fastapi-app:latest /projects/dnd/research-and-development
