@@ -16,3 +16,4 @@ uvicorn==0.34.0
 charset-normalizer==3.4.0 
 requests==2.32.3 
 urllib3==2.2.3
+telegram==0.0.1
