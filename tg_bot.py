@@ -222,7 +222,7 @@ def choosing_race(update: Update, context: CallbackContext) -> int:
 
     try:
         # Чтение данных о расе
-        with open(f"C:/Users/Artem/Desktop/RnD/research-and-development/not_in_use/race/{RACES[chosen_race]}.json", "r", encoding="utf-8") as file:
+        with open(f"not_in_use/race/{RACES[chosen_race]}.json", "r", encoding="utf-8") as file:
             race_data = json.load(file)
             class_options = race_data.get('class_options', [])  # Рекомендуемые классы
             print(f"Данные для расы {chosen_race}: Рекомендуемые классы - {class_options}")  # Логирование данных
