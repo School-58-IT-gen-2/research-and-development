@@ -245,7 +245,7 @@ from db_source import DBSource
 import uvicorn
 from dotenv import load_dotenv
 import os
-
+import tg_bot
 
 
 clases = {'Следопыт':'pathfinder',"Варвар":"barbarian","Бард":"bard","Плут":"dodger","Друид":"druid","Колдун":"magician","Монах":"monk","Паладин":"paladin","Жрец":"priest","Маг":"warlock","Воин":"warrior","Волшебник":"wizzard"}
@@ -380,7 +380,7 @@ def choose(gender: str, rac: str, clas: str):
 
     #Health_points
     hit_dice = class_file["class"]["hit_dice"].split('d')
-    health_points = hit_dice[1] + player_list["stat_modifiers"]["constitution"]
+    health_points = int(hit_dice[1]) + int(player_list["stat_modifiers"]["constitution"])
     player_list["hp"] = health_points
     
     #speed
