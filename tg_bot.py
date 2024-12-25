@@ -299,7 +299,7 @@ def choosing_gender(update: Update, context: CallbackContext) -> None:
 # Main function
 def main():
     """Runs the bot."""
-    updater = Updater("8154427178:AAEJPcc0xXiRt43YgCNs_hKKqVmibGoyAAA")
+    updater = Updater("teg")
     dispatcher = updater.dispatcher
 
     conv_handler = ConversationHandler(
