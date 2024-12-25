@@ -8,7 +8,7 @@
         version: main
 
     - name: Build Docker image
-      command: docker build -t research_and_development_container:main /projects/dnd/research-and-development
+      command: docker build -t my-fastapi-app:latest /projects/dnd/research-and-development
 
     - name: Stop old container
       command: docker compose -f /projects/dnd/research-and-development/docker-compose.yml down --remove-orphans

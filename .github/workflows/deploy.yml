@@ -3,7 +3,8 @@ name: Deploy project on server
 on:
   push:
     branches:
-      - master
+      - main
+      - cicd
   workflow_dispatch:
 jobs:
   ansible:
