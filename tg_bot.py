@@ -3,9 +3,9 @@ import requests
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, ConversationHandler, CallbackContext
 import re
-
-
-
+from db_source import DBSource
+import os
+from dotenv import load_dotenv
 # Constants
 URL = "http://localhost:8000/create-character-list"
 GENDER_OPTIONS = ['M', 'W']
@@ -68,6 +68,9 @@ TRANSLATIONS = {
     "languages": "Языки",
     "backstory": "Предыстория"
 }
+load_dotenv()
+supabase = DBSource(os.getenv("SUPABASE_URL"),os.getenv("SUPABASE_KEY"))
+supabase.connect()
 
 def translate_key(key):
     """Translates a key using the TRANSLATIONS dictionary."""
@@ -222,10 +225,11 @@ def choosing_race(update: Update, context: CallbackContext) -> int:
 
     try:
         # Чтение данных о расе
-        with open(f"not_in_use/race/{RACES[chosen_race]}.json", "r", encoding="utf-8") as file:
-            race_data = json.load(file)
-            class_options = race_data.get('class_options', [])  # Рекомендуемые классы
-            print(f"Данные для расы {chosen_race}: Рекомендуемые классы - {class_options}")  # Логирование данных
+        # with open(f"not_in_use/race/{RACES[chosen_race]}.json", "r", encoding="utf-8") as file:
+        #     race_data = json.load(file)
+        race_data = supabase.get_race_data_by_name(RACES[chosen_race])
+        class_options = race_data.get('class_options', [])  # Рекомендуемые классы
+        print(f"Данные для расы {chosen_race}: Рекомендуемые классы - {class_options}")  # Логирование данных
     except FileNotFoundError:
         query.message.reply_text("Ошибка: файл с данными расы не найден.")
         return ConversationHandler.END
@@ -299,7 +303,7 @@ def choosing_gender(update: Update, context: CallbackContext) -> None:
 # Main function
 def main():
     """Runs the bot."""
-    updater = Updater("^-^")
+    updater = Updater("-M-")
     dispatcher = updater.dispatcher
 
     conv_handler = ConversationHandler(
