@@ -1,4 +1,4 @@
-
+from enum import Enum
 from fastapi import FastAPI
 from pydantic import BaseModel
 import json
@@ -7,6 +7,7 @@ from db_source import DBSource
 import uvicorn
 from dotenv import load_dotenv
 import os
+import requests
 # import tg_bot
 
 
@@ -17,17 +18,45 @@ races = {"Дварф":'dwarf',"Эльф":'elves','Полурослик':"halflin
 
 app = FastAPI()
 
+class Races_variants(Enum):
+    dwarf = "Дварф"
+    elves = "Эльф"
+    halfling = 'Полурослик',
+    human = 'Человек'
+    dragonborn = 'Драконорожденный'
+    gnom = 'Гном'
+    halfelf = 'Полуэльф'
+    halforc = 'Полуорк'
+    tiefling = 'Тифлинг'
+
+class Class_variant(Enum):
+    pathfinder = 'Следопыт'
+    barbarian = "Варвар"
+    bard = "Бард"
+    dodger = "Плут"
+    druid = "Друид"
+    magician = "Колдун"
+    monk = "Монах"
+    paladin = "Паладин"
+    priest = "Жрец"
+    warlock = "Маг"
+    warrior = "Воин"
+    wizzard = "Волшебник"
+class Gender_variants(Enum):
+    M = "M"
+    F = "F"
+
 
 
 class Create(BaseModel):
-    gender: str
-    rac: str
-    clas: str
+    gender: Gender_variants 
+    rac: Races_variants
+    clas: Class_variant
 
 
 @app.post("/create-character-list")
 async def register_user(create: Create):
-    return choose(create.gender, create.rac, create.clas)
+    return choose(create.gender.value, create.rac.value, create.clas.value)
 
 
 

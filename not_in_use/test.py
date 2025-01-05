@@ -147,7 +147,7 @@ import os
 import requests
 
 # URL вашего FastAPI сервера
-url = "http://localhost:8000/create-character-list"
+url = "http://localhost:6 000/create-character-list"
 
 
 data = {
