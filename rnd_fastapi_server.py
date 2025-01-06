@@ -21,7 +21,7 @@ app = FastAPI()
 class Races_variants(Enum):
     dwarf = "Дварф"
     elves = "Эльф"
-    halfling = 'Полурослик',
+    halfling = 'Полурослик'
     human = 'Человек'
     dragonborn = 'Драконорожденный'
     gnom = 'Гном'
