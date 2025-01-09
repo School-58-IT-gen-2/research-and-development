@@ -29,8 +29,8 @@ import os
 
 # #             data = {
 # #                 "gender": f"{g}",
-# #                 "rac": f"{r}",
-# #                 "clas": f"{c}"
+# #                 "race": f"{r}",
+# #                 "character_class": f"{c}"
 # #             }
 
 # #             response = client.post("/register/", params=data)
@@ -62,8 +62,8 @@ import os
 
 # data = {
 #     "gender": "W",
-#     "rac": "Тифлинг",
-#     "clas": "Жрец"
+#     "race": "Тифлинг",
+#     "character_class": "Жрец"
 # }
 
 # # Отправляем POST запрос на endpoint /register/
@@ -102,8 +102,8 @@ import os
 # #             for _ in range(5):
 # #                 data = {
 # #                             "gender": f"{g}",
-# #                             "rac": f"{r}",
-# #                             "clas": f"{c}"
+# #                             "race": f"{r}",
+# #                             "character_class": f"{c}"
 # #                         }
 # #                 response = client.post("/register/", params=data)
 
@@ -131,8 +131,8 @@ import os
 # #     c = i
 # #     data = {
 # #                 "gender": "M",
-# #                 "rac": "Дварф",
-# #                 "clas": "Воин"
+# #                 "race": "Дварф",
+# #                 "character_class": "Воин"
 # #             }
 
 # #     # Отправляем POST запрос на endpoint /register/
@@ -152,8 +152,8 @@ url = "http://localhost:6 000/create-character-list"
 
 data = {
     "gender": "M",
-    "rac": "Полурослик",
-    "clas": "Жрец"
+    "race": "Полурослик",
+    "character_class": "Жрец"
 }
 
 # Отправка POST запроса
@@ -190,8 +190,8 @@ else:
 #             for _ in range(5):
 #                 data = {
 #                             "gender": f"{g}",
-#                             "rac": f"{r}",
-#                             "clas": f"{c}"
+#                             "race": f"{r}",
+#                             "character_class": f"{c}"
 #                         }
                 
 #                 response = requests.post(url, json=data)

@@ -19,29 +19,29 @@
 
 # class Create(BaseModel):
 #     gender: str
-#     rac: str
-#     clas: str
+#     race: str
+#     character_class: str
 
 # @app.post("/create-character-list")
 # async def create_character_list(data: Create):
 #     try:
-#         return choose(data.gender, data.rac, data.clas)
+#         return choose(data.gender, data.race, data.character_class)
 #     except Exception as e:
 #         raise HTTPException(status_code=422, detail=str(e))
 
 
 
-# def choose(gender: str, rac: str, clas: str):
+# def choose(gender: str, race: str, character_class: str):
 #     # print(f"choose male:(M/F)")
 #     # gender = input()
 
 #     # print(f"choose race:")
 #     # for i in races.keys():
 #         # print(i)
-#     rac = races[rac]
+#     race = races[race]
 
 #     base_path = os.path.join('/app', "race")
-#     race_file_path = os.path.join(base_path, f"{rac}.json")
+#     race_file_path = os.path.join(base_path, f"{race}.json")
 
 #     with open(race_file_path, 'r', encoding="utf-8") as race_file: 
 #         race_file = json.load(race_file)
@@ -74,10 +74,10 @@
 #     # print(f"choose class:")
 #     # for i in race_file['class_options']:
 #     #     print(i)
-#     clas = clases[clas]
+#     character_class = clases[character_class]
 
 #     base_path = os.path.join('/app', "classes")
-#     class_file_path = os.path.join(base_path, f"{clas}.json")
+#     class_file_path = os.path.join(base_path, f"{character_class}.json")
 
 #     with open(class_file_path, 'r', encoding="utf-8") as class_file: 
 #         class_file = json.load(class_file)
@@ -183,15 +183,15 @@
 #     with open(spells_file_path, 'r', encoding="utf-8") as spells_file: 
 #         spells_file = json.load(spells_file) 
 
-#     if rac in spells_file["races"].keys():
-#          player_list["spells_and_magic"] = spells_file["races"][rac]
+#     if race in spells_file["races"].keys():
+#          player_list["spells_and_magic"] = spells_file["races"][race]
          
 #     if subrace != []:
 #         if subrace["name"] in spells_file["races"].keys():
 #             player_list["spells_and_magic"] = spells_file["races"][subrace["name"]]
 
-#     if clas in spells_file["classes"].keys():
-#          player_list["spells_and_magic"] = spells_file["classes"][clas]
+#     if character_class in spells_file["classes"].keys():
+#          player_list["spells_and_magic"] = spells_file["classes"][character_class]
 #     # for i in  player_list["spells_and_magic"].keys():
 #     #     player_list["attack_and_damage_values"][i]  = spells_file["spells"][i] 
 
@@ -231,7 +231,7 @@
 
 #     with open(lore_file_path, 'r', encoding="utf-8") as lore_file: 
 #         lore_file = json.load(lore_file) 
-#     player_list["backstory"] = lore_file["races"][rac][random.randint(0,len(lore_file["races"][rac])-1)]
+#     player_list["backstory"] = lore_file["races"][race][random.randint(0,len(lore_file["races"][race])-1)]
 #     # print(weapon_file["armor"])
 #     return player_list
 

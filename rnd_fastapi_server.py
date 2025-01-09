@@ -50,23 +50,23 @@ class Gender_variants(Enum):
 
 class Create(BaseModel):
     gender: Gender_variants 
-    rac: Races_variants
-    clas: Class_variant
+    race: Races_variants
+    character_class: Class_variant
 
 
 @app.post("/create-character-list")
 async def register_user(create: Create):
-    return choose(create.gender.value, create.rac.value, create.clas.value)
+    return choose(create.gender.value, create.race.value, create.character_class.value)
 
 
 
-def choose(gender: str, rac: str, clas: str):
+def choose(gender: str, race: str, character_class: str):
     load_dotenv()
     supabase = DBSource(os.getenv("SUPABASE_URL"),os.getenv("SUPABASE_KEY"))
     supabase.connect()
     player_list = supabase.get_player_data()
-    rac = races[rac]
-    race_file = supabase.get_race_data_by_name(rac)
+    race = races[race]
+    race_file = supabase.get_race_data_by_name(race)
     subrace = race_file["race"]['subraces']
     if subrace != []:
         random.shuffle(subrace)
@@ -91,8 +91,8 @@ def choose(gender: str, rac: str, clas: str):
     race_file['race']["age"]
     player_list['age'] = random.randint(race_file['race']["age"]['min'],race_file['race']["age"]['max'])
 
-    clas = clases[clas]
-    class_file = supabase.get_class_data_by_name(clas)
+    character_class = clases[character_class]
+    class_file = supabase.get_class_data_by_name(character_class)
     subclass = class_file["class"]['subclasses']
     random.shuffle(subclass)
     subclass = subclass[0]
@@ -188,15 +188,15 @@ def choose(gender: str, rac: str, clas: str):
     spells_file = supabase.get_spells_data()
 
 
-    if rac in spells_file["races"].keys():
-         player_list["spells"] = spells_file["races"][rac]
+    if race in spells_file["races"].keys():
+         player_list["spells"] = spells_file["races"][race]
          
     if subrace != []:
         if subrace["name"] in spells_file["races"].keys():
             player_list["spells"] = spells_file["races"][subrace["name"]]
 
-    if clas in spells_file["classes"].keys():
-         player_list["spells"] = spells_file["classes"][clas]
+    if character_class in spells_file["classes"].keys():
+         player_list["spells"] = spells_file["classes"][character_class]
     #inventory
     armor = race_file["starting_equipment"]["armor"]
     random.shuffle(armor)
@@ -226,5 +226,5 @@ def choose(gender: str, rac: str, clas: str):
 
     #backstory
     lore_file = supabase.get_lore_data()
-    player_list["backstory"] = lore_file["races"][rac][random.randint(0,len(lore_file["races"][rac])-1)]
+    player_list["backstory"] = lore_file["races"][race][random.randint(0,len(lore_file["races"][race])-1)]
     return player_list

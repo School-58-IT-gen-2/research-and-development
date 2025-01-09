@@ -274,8 +274,8 @@ def choosing_gender(update: Update, context: CallbackContext) -> None:
 
     data = {
         "gender": context.user_data['gender'],
-        "rac": get_key_by_value(RACES, context.user_data['race']),
-        "clas": context.user_data['class']
+        "race": get_key_by_value(RACES, context.user_data['race']),
+        "character_class": context.user_data['class']
     }
 
     try:
