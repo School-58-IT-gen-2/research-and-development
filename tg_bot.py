@@ -7,7 +7,7 @@ from db_source import DBSource
 import os
 from dotenv import load_dotenv
 # Constants
-URL = "http://rnd.questhub.pro/create-character-list"
+URL = "https://rnd.questhub.pro/create-character-list"
 GENDER_OPTIONS = ['M', 'W']
 RACES = {
     "Дварф": 'dwarf',

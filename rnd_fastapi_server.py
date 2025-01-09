@@ -44,7 +44,7 @@ class Class_variant(Enum):
     wizzard = "Волшебник"
 class Gender_variants(Enum):
     M = "M"
-    F = "F"
+    F = "W"
 
 
 
