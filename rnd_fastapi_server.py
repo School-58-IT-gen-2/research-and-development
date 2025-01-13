@@ -10,7 +10,44 @@ import os
 import requests
 # import tg_bot
 
-
+player_list_example = {
+    "race": "",
+    "character_class": "",
+    "initiative": 1,
+    "experience": 0,
+    "ownership_bonus": 2,
+    "ability_saving_throws": {},
+    "death_saving_throws": 0,
+    "inspiration": False,
+    "skills":[],
+    "interference": False,
+    "advantages": False,
+    "traits_and_abilities":{},
+    "weaknesses":{},
+    "valuables":{},
+    "name": "",
+    "stat_modifiers":{"strength":0,"dexterity":0,"constitution":0,"intelligence":0,"wisdom":0,"charisma":0},
+    "stats":{"strength":10,"dexterity":10,"constitution":10,"intelligence":10,"wisdom":10,"charisma":10},
+    "backstory": "",
+    "notes": "",
+    "diary": "",
+    "hp": 0,
+    "level": 1,
+    "passive_perception": 1,
+    "travel_speed": 1,
+    "speed": 0,
+    "weapons_and_equipment":{},
+    "spells":{},
+    "languages":[],
+    "special_features":{},
+    "npc_relations":{},
+    "user_id":0,
+    "surname": "",
+    "inventory": [],
+    "age": 1,
+    "attack_and_damage_values":{},
+    "worldview": ""
+}
 clases = {'Следопыт':'pathfinder',"Варвар":"barbarian","Бард":"bard","Плут":"dodger","Друид":"druid","Колдун":"magician","Монах":"monk","Паладин":"paladin","Жрец":"priest","Маг":"warlock","Воин":"warrior","Волшебник":"wizzard"}
 races = {"Дварф":'dwarf',"Эльф":'elves','Полурослик':"halfling",'Человек':"human",'Драконорожденный':"dragonborn",'Гном':"gnom",'Полуэльф':"halfelf",'Полуорк':"halforc",'Тифлинг':"tiefling"}
 
@@ -64,7 +101,7 @@ def choose(gender: str, race: str, character_class: str):
     load_dotenv()
     supabase = DBSource(os.getenv("SUPABASE_URL"),os.getenv("SUPABASE_KEY"))
     supabase.connect()
-    player_list = supabase.get_player_data()
+    player_list = player_list_example
     race = races[race]
     race_file = supabase.get_race_data_by_name(race)
     subrace = race_file["race"]['subraces']
