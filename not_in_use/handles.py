@@ -5,7 +5,7 @@ from db.db_source import DBSource
 from config import SUPABASE_URL, SUPABASE_KEY
 import requests
 
-CONSTRUCTOR_START, CHOOSING_RACE, CHOOSING_CLASS, CHOOSING_GENDER = range(4)
+CHOOSING_RACE, CHOOSING_CLASS, CHOOSING_GENDER = range(3)
 URL = "https://rnd.questhub.pro/create-character-list"
 db = DBSource(SUPABASE_URL, SUPABASE_KEY)
 db.connect()
@@ -40,19 +40,10 @@ CLASSES = {
 GENDER_OPTIONS = ['M', 'W']
 
 def start(update: Update, context: CallbackContext) -> int:
-    """Начало диалога: """
-    keyboard = [[InlineKeyboardButton('Сгенерировать случайного персонажа', callback_data='random')], [InlineKeyboardButton('Конструктор персонажа', callback_data='constructor')]]
+    """Начало диалога: выбор расы."""
+    keyboard = [[InlineKeyboardButton(race, callback_data=race)] for race in RACES.keys()]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    update.message.reply_text("Выберите действие:", reply_markup=reply_markup)
-    return CONSTRUCTOR_START
-
-def constructor_start(update: Update, context: CallbackContext) -> int:
-    """выбор расы."""
-    query = update.callback_query
-    query.answer()
-    keyboard = [[InlineKeyboardButton(race, callback_data=race)] for race in RACES.keys()] + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    query.edit_message_text("Выберите класс для вашего персонажа:", reply_markup=reply_markup)
+    update.message.reply_text("Выберите расу для вашего персонажа:", reply_markup=reply_markup)
     return CHOOSING_RACE
 
 def choosing_race(update: Update, context: CallbackContext) -> int:
@@ -120,7 +111,6 @@ def get_conversation_handler():
     return ConversationHandler(
         entry_points=[CommandHandler('start', start)],
         states={
-            CONSTRUCTOR_START: [CallbackQueryHandler(constructor_start)],
             CHOOSING_RACE: [CallbackQueryHandler(choosing_race)],
             CHOOSING_CLASS: [CallbackQueryHandler(choosing_class)],
             CHOOSING_GENDER: [CallbackQueryHandler(choosing_gender)]
