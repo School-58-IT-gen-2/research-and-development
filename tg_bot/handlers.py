@@ -39,7 +39,6 @@ CLASSES = {
 
 GENDER_OPTIONS = ['M', 'W']
 
-
 def start(update: Update, context: CallbackContext) -> int:
     """Начало диалога: """
     keyboard = [[InlineKeyboardButton('Сгенерировать случайного персонажа', callback_data='random')], [InlineKeyboardButton('Конструктор персонажа', callback_data='constructor')]]
