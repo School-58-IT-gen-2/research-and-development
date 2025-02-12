@@ -17,3 +17,9 @@ class CharConstructor:
     def set_class(self, char_class: str):
         self.char_class = char_class
 
+    def get_races(self):
+        return read_json_file('json_data\main_constructor.json')['Races']
+    
+    def set_race(self, char_race: str):
+        self.char_class = char_race
+
