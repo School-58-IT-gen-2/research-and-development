@@ -124,6 +124,7 @@ def choose(gender: str, race: str, character_class: str):
         "notes": "",
         "diary": "",
         "hp": 0,
+        "level": 1,
         "lvl": 1,
         "passive_perception": 1,
         "travel_speed": 1,
@@ -183,15 +184,15 @@ def choose(gender: str, race: str, character_class: str):
     random.shuffle(values)
     a = 0 
     for i in stats.keys():
-         if i not in primary_ability:
-              stats[i] = values[a]
-              a+=1
+        if i not in primary_ability:
+            stats[i] = values[a]
+            a+=1
     for i in primary_ability:
-         stats[i] = max_values[0]
-         max_values.pop(0) 
+        stats[i] = max_values[0]
+        max_values.pop(0) 
     ability_bonuses = race_file["race"]["ability_bonuses"]
     for i in ability_bonuses.keys():
-         stats[i] += ability_bonuses[i]
+        stats[i] += ability_bonuses[i]
     if subrace != []:
         ability_bonuses = subrace["ability_bonuses"]
         for i in ability_bonuses.keys():
@@ -305,5 +306,4 @@ def choose(gender: str, race: str, character_class: str):
     
     #захардкодил уровень
     player_list["lvl"] = 1
-
     return player_list
