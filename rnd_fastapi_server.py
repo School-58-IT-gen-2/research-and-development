@@ -302,4 +302,10 @@ def choose(gender: str, race: str, character_class: str):
     #backstory
     lore_file = supabase.get_lore_data()
     player_list["backstory"] = lore_file["races"][race][random.randint(0,len(lore_file["races"][race])-1)]
+    
+    #захардкодил уровень
+    if "level" in player_list.keys():
+        player_list["lvl"] = 1
+        player_list.pop("level")
+
     return player_list
