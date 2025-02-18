@@ -124,7 +124,6 @@ def choose(gender: str, race: str, character_class: str):
         "notes": "",
         "diary": "",
         "hp": 0,
-        "level": 1,
         "lvl": 1,
         "passive_perception": 1,
         "travel_speed": 1,
@@ -139,8 +138,9 @@ def choose(gender: str, race: str, character_class: str):
         "inventory": [],
         "age": 1,
         "attack_and_damage_values":{},
-        "worldview": ""
-    }
+        "worldview": "",
+        "just_for_test": "test"
+    }.copy()
     race = races[race]
     race_file = supabase.get_race_data_by_name(race)
     subrace = race_file["race"]['subraces']
@@ -304,6 +304,4 @@ def choose(gender: str, race: str, character_class: str):
     lore_file = supabase.get_lore_data()
     player_list["backstory"] = lore_file["races"][race][random.randint(0,len(lore_file["races"][race])-1)]
     
-    #захардкодил уровень
-    player_list["lvl"] = 1
     return player_list
