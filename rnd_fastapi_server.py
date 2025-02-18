@@ -138,9 +138,8 @@ def choose(gender: str, race: str, character_class: str):
         "inventory": [],
         "age": 1,
         "attack_and_damage_values":{},
-        "worldview": "",
-        "just_for_test": "test"
-    }.copy()
+        "worldview": ""
+    }
     race = races[race]
     race_file = supabase.get_race_data_by_name(race)
     subrace = race_file["race"]['subraces']
