@@ -93,6 +93,7 @@ class Create(BaseModel):
 
 @app.post("/create-character-list")
 async def register_user(create: Create):
+    #почему-то тут бага с уровнем
     return choose(create.gender.value, create.race.value, create.character_class.value)
 
 
