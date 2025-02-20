@@ -143,7 +143,7 @@ def choose(gender: str, race: str, character_class: str):
         random.shuffle(subrace)
         subrace = subrace[0]
         player_list["race"] = race
-        player_list["subrace"] = subrace
+        player_list["subrace"] = subrace["name"]
     else:
         player_list["race"] = race_file["race"]['name']
     player_list["gender"] = gender
@@ -304,7 +304,8 @@ def choose(gender: str, race: str, character_class: str):
     #backstory
     lore_file = supabase.get_lore_data()
     player_list["backstory"] = lore_file["races"][race][random.randint(0,len(lore_file["races"][race])-1)]
-    
+    #print(race_file)
+    player_list["race"] = race_file["race"]["name"]
     return player_list
 
 print(choose("M", "Гном", "Воин"))
