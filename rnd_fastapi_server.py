@@ -116,7 +116,7 @@ def choose(gender: str, race: str, character_class: str):
         "stat_modifiers":{"strength":0,"dexterity":0,"constitution":0,"intelligence":0,"wisdom":0,"charisma":0},
         "stats":{"strength":10,"dexterity":10,"constitution":10,"intelligence":10,"wisdom":10,"charisma":10},
         "backstory": "",
-        "notes": {},
+        "notes": None,
         "gold": 0,
         "experience": 0,
         "hp": 0,
