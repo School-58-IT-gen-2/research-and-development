@@ -10,7 +10,7 @@ import os
 import requests
 # import tg_bot
 
-player_list_example = {
+"""player_list_example = {
     "race": "",
     "character_class": "",
     "initiative": 1,
@@ -47,11 +47,10 @@ player_list_example = {
     "age": 1,
     "attack_and_damage_values":{},
     "worldview": ""
-}
+}"""
+
 clases = {'Следопыт':'pathfinder',"Варвар":"barbarian","Бард":"bard","Плут":"dodger","Друид":"druid","Колдун":"magician","Монах":"monk","Паладин":"paladin","Жрец":"priest","Маг":"warlock","Воин":"warrior","Волшебник":"wizzard"}
 races = {"Дварф":'dwarf',"Эльф":'elves','Полурослик':"halfling",'Человек':"human",'Драконорожденный':"dragonborn",'Гном':"gnom",'Полуэльф':"halfelf",'Полуорк':"halforc",'Тифлинг':"tiefling"}
-
-
 
 app = FastAPI()
 
@@ -83,8 +82,6 @@ class Gender_variants(Enum):
     M = "M"
     F = "W"
 
-
-
 class Create(BaseModel):
     gender: Gender_variants 
     race: Races_variants
@@ -93,7 +90,6 @@ class Create(BaseModel):
 
 @app.post("/create-character-list")
 async def register_user(create: Create):
-    #почему-то тут бага с уровнем
     return choose(create.gender.value, create.race.value, create.character_class.value)
 
 
@@ -116,29 +112,29 @@ def choose(gender: str, race: str, character_class: str):
         "advantages": False,
         "traits_and_abilities":{},
         "weaknesses":{},
-        "valuables":{},
         "name": "",
         "stat_modifiers":{"strength":0,"dexterity":0,"constitution":0,"intelligence":0,"wisdom":0,"charisma":0},
         "stats":{"strength":10,"dexterity":10,"constitution":10,"intelligence":10,"wisdom":10,"charisma":10},
         "backstory": "",
-        "notes": "",
-        "diary": "",
+        "notes": {},
+        "gold": 0,
+        "experience": 0,
         "hp": 0,
         "lvl": 1,
         "passive_perception": 1,
         "travel_speed": 1,
         "speed": 0,
-        "weapons_and_equipment":{},
+        "weapons_and_equipment":[],
         "spells":{},
         "languages":[],
-        "special_features":{},
         "npc_relations":{},
         "user_id":0,
         "surname": "",
         "inventory": [],
         "age": 1,
-        "attack_and_damage_values":{},
-        "worldview": ""
+        "worldview": "",
+        "subrace": "",
+        "gender": ""
     }
     race = races[race]
     race_file = supabase.get_race_data_by_name(race)
@@ -146,9 +142,11 @@ def choose(gender: str, race: str, character_class: str):
     if subrace != []:
         random.shuffle(subrace)
         subrace = subrace[0]
-        player_list["race"] = subrace['name']
+        player_list["race"] = race
+        player_list["subrace"] = subrace
     else:
         player_list["race"] = race_file["race"]['name']
+    player_list["gender"] = gender
     if gender == 'M':
         names = race_file["race"]["man_names"]
     else:
@@ -252,14 +250,16 @@ def choose(gender: str, race: str, character_class: str):
 
     #attack and damage
     weapon_file = supabase.get_weapon_data()
-    for i in  player_list["weapons_and_equipment"]:
-        if i not in weapon_file["armor"]:
-            player_list["attack_and_damage_values"][i] = weapon_file["weapons"][i]
+    # for i in  player_list["weapons_and_equipment"]:
+    #    if i not in weapon_file["armor"]:
+    #        player_list["attack_and_damage_values"][i] = weapon_file["weapons"][i]
 
     #weapons
     weapon = race_file["starting_equipment"]["weapons"][random.randint(0,len(race_file["starting_equipment"]["weapons"])-1)]
-    player_list["weapons_and_equipment"][weapon] = weapon_file["weapons"][weapon]
-
+    #player_list["weapons_and_equipment"][weapon] = weapon_file["weapons"][weapon]
+    item = weapon_file["weapons"][weapon]
+    item["name"] = weapon
+    player_list["weapons_and_equipment"].append(item)
     spells_file = supabase.get_spells_data()
 
 
@@ -277,9 +277,10 @@ def choose(gender: str, race: str, character_class: str):
     random.shuffle(armor)
 
 
-    player_list["weapons_and_equipment"][armor[0]] = weapon_file["armor"][armor[0]]
-
-    player_list["attack_and_damage_values"][armor[0]] = weapon_file["armor"][armor[0]]
+    #player_list["weapons_and_equipment"][armor[0]] = weapon_file["armor"][armor[0]]
+    item = weapon_file["armor"][armor[0]]
+    item["name"] = armor[0]
+    player_list["weapons_and_equipment"].append(item)
 
     keys = []
     for j in race_file["starting_equipment"]["packs"].keys():
@@ -290,6 +291,7 @@ def choose(gender: str, race: str, character_class: str):
     tools = race_file["starting_equipment"]["tools"]    
     random.shuffle(tools)
     player_list["inventory"].append(tools[0])
+    player_list["inventory"] = [{"name":i} for i in player_list["inventory"]]
          
     #worldview
     keys = []
@@ -304,3 +306,5 @@ def choose(gender: str, race: str, character_class: str):
     player_list["backstory"] = lore_file["races"][race][random.randint(0,len(lore_file["races"][race])-1)]
     
     return player_list
+
+print(choose("M", "Гном", "Воин"))
