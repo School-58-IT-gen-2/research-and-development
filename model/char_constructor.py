@@ -61,8 +61,13 @@ class CharConstructor:
         self.player_list['race'] = char_race
         
     def get_characteristics(self):
+        return ['1','2','3']
         return read_json_file('json_data\main_constructor.json')["Classes"][self.player_list["character_class"]]["Рекомендуемые характеристики"]
     
-    def set_characteristics(self):
+    def set_characteristics(self, characteristics):
         pass
 
+    def set_skills(self, skills):
+        pass
+    def get_skills(self):
+        return ['1','2','3']

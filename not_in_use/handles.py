@@ -5,7 +5,7 @@ from db.db_source import DBSource
 from config import SUPABASE_URL, SUPABASE_KEY
 import requests
 
-CHOOSING_RACE, CHOOSING_CLASS, CHOOSING_GENDER = range(3)
+CHOOSING_CLASS, CHOOSING_RACE, CHOOSING_CHARACTERISTICS, CHOOSING_SKILLS, CHOOSING_GENDER = range(5)
 URL = "https://rnd.questhub.pro/create-character-list"
 db = DBSource(SUPABASE_URL, SUPABASE_KEY)
 db.connect()
@@ -40,14 +40,26 @@ CLASSES = {
 GENDER_OPTIONS = ['M', 'W']
 
 def start(update: Update, context: CallbackContext) -> int:
-    """Начало диалога: выбор расы."""
-    keyboard = [[InlineKeyboardButton(race, callback_data=race)] for race in RACES.keys()]
+
+    keyboard = [[InlineKeyboardButton(class_, callback_data=class_)] for class_ in CLASSES.keys()]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    update.message.reply_text("Выберите расу для вашего персонажа:", reply_markup=reply_markup)
+    update.message.reply_text("Выберите класс для вашего персонажа:", reply_markup=reply_markup)
+    return CHOOSING_CLASS
+
+
+def choosing_class(update: Update, context: CallbackContext) -> int:
+
+    query = update.callback_query
+    query.answer()
+    context.user_data['class'] = query.data
+
+    keyboard = [[InlineKeyboardButton(race, callback_data=race)] for race in RACES]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    query.edit_message_text("Выберите расу для вашего персонажа:", reply_markup=reply_markup)
     return CHOOSING_RACE
 
 def choosing_race(update: Update, context: CallbackContext) -> int:
-    """Обработка выбора расы."""
+
     query = update.callback_query
     query.answer()
     chosen_race = query.data
@@ -63,17 +75,22 @@ def choosing_race(update: Update, context: CallbackContext) -> int:
 
     reply_markup = InlineKeyboardMarkup(keyboard)
     query.edit_message_text("Выберите класс для вашего персонажа:", reply_markup=reply_markup)
-    return CHOOSING_CLASS
-
-def choosing_class(update: Update, context: CallbackContext) -> int:
-    """Обработка выбора класса."""
+    return CHOOSING_CHARACTERISTICS
+def choosing_characteristics(update: Update, context: CallbackContext) -> int:
+    """Обработка выбора хара��теристик."""
     query = update.callback_query
     query.answer()
-    context.user_data['class'] = query.data
+    context.user_data['characteristics'] = query.data
 
-    keyboard = [[InlineKeyboardButton(g, callback_data=g)] for g in GENDER_OPTIONS]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    query.edit_message_text("Выберите пол для вашего персонажа:", reply_markup=reply_markup)
+
+    return CHOOSING_SKILLS
+
+def choosing_skills(update: Update, context: CallbackContext) -> int:
+    """Обработка выбора навыков."""
+    query = update.callback_query
+    query.answer()
+    context.user_data['skills'] = query.data
+
     return CHOOSING_GENDER
 
 def choosing_gender(update: Update, context: CallbackContext) -> None:
@@ -106,13 +123,17 @@ def choosing_gender(update: Update, context: CallbackContext) -> None:
 
     return ConversationHandler.END
 
+
+
 def get_conversation_handler():
     """Возвращает ConversationHandler для бота."""
     return ConversationHandler(
         entry_points=[CommandHandler('start', start)],
         states={
-            CHOOSING_RACE: [CallbackQueryHandler(choosing_race)],
             CHOOSING_CLASS: [CallbackQueryHandler(choosing_class)],
+            CHOOSING_RACE: [CallbackQueryHandler(choosing_race)],
+            CHOOSING_CHARACTERISTICS: [CallbackQueryHandler(choosing_characteristics)],
+            CHOOSING_SKILLS: [choosing_skills],
             CHOOSING_GENDER: [CallbackQueryHandler(choosing_gender)]
         },
         fallbacks=[]

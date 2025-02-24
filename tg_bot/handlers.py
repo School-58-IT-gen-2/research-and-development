@@ -3,9 +3,10 @@ from telegram.ext import CommandHandler, CallbackQueryHandler, ConversationHandl
 from tg_bot.utils import format_character_card, escape_markdown_v2, get_key_by_value
 from db.db_source import DBSource
 from config import SUPABASE_URL, SUPABASE_KEY
+from model.char_constructor import CharConstructor
 import requests
 
-CONSTRUCTOR_START, CHOOSING_RACE, CHOOSING_CLASS, CHOOSING_GENDER = range(4)
+CONSTRUCTOR_START, CHOOSING_CLASS, CHOOSING_RACE, CHOOSING_CHARACTERISTICS, CHOOSING_SKILLS, CHOOSING_GENDER = range(6)
 URL = "https://rnd.questhub.pro/create-character-list"
 db = DBSource(SUPABASE_URL, SUPABASE_KEY)
 db.connect()
@@ -47,42 +48,80 @@ def start(update: Update, context: CallbackContext) -> int:
     return CONSTRUCTOR_START
 
 def constructor_start(update: Update, context: CallbackContext) -> int:
-    """выбор расы."""
+
+
     query = update.callback_query
+    if query.data == 'random':
+        query.edit_message_text("*Тут выводится случайный персонаж", reply_markup=InlineKeyboardMarkup([]))
+        return ConversationHandler.END
+    global constructor
+    constructor = CharConstructor()
     query.answer()
-    keyboard = [[InlineKeyboardButton(race, callback_data=race)] for race in RACES.keys()] + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    query.edit_message_text("Выберите класс для вашего персонажа:", reply_markup=reply_markup)
-    return CHOOSING_RACE
-
-def choosing_race(update: Update, context: CallbackContext) -> int:
-    """Обработка выбора расы."""
-    query = update.callback_query
-    query.answer()
-    chosen_race = query.data
-    context.user_data['race'] = RACES[chosen_race]
-
-    race_data = db.get_race_data_by_name(RACES[chosen_race])
-    class_options = race_data.get('class_options', [])
-
-    keyboard = []
-    for cls in CLASSES.keys():
-        label = f"⭐ {cls} (Рекомендуется)" if cls in class_options else cls
-        keyboard.append([InlineKeyboardButton(label, callback_data=cls)])
-
+    classes = constructor.get_classes()
+    keyboard = [[InlineKeyboardButton(race, callback_data=race)] for race in classes] + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
     reply_markup = InlineKeyboardMarkup(keyboard)
     query.edit_message_text("Выберите класс для вашего персонажа:", reply_markup=reply_markup)
     return CHOOSING_CLASS
 
+
 def choosing_class(update: Update, context: CallbackContext) -> int:
-    """Обработка выбора класса."""
+
+    query = update.callback_query
+    
+    constructor.set_class(query.data)
+
+    races = constructor.get_races()
+    keyboard = [[InlineKeyboardButton(race, callback_data=race)] for race in races] + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
+
+    query.answer()
+    
+
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    query.edit_message_text("Выберите расу для вашего персонажа:", reply_markup=reply_markup)
+    return CHOOSING_RACE
+
+def choosing_race(update: Update, context: CallbackContext) -> int:
+
     query = update.callback_query
     query.answer()
-    context.user_data['class'] = query.data
+    constructor.set_race(query.data)
 
-    keyboard = [[InlineKeyboardButton(g, callback_data=g)] for g in GENDER_OPTIONS]
+    characteristics = constructor.get_characteristics()
+    keyboard = [[InlineKeyboardButton(characteristic, callback_data=characteristic)] for characteristic in characteristics] + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
+
+    
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    query.edit_message_text("Выберите характеристики для вашего персонажа:", reply_markup=reply_markup)
+    return CHOOSING_CHARACTERISTICS
+def choosing_characteristics(update: Update, context: CallbackContext) -> int:
+
+    query = update.callback_query
+    query.answer()
+    
+    constructor.set_characteristics(query.data)
+
+    skills = constructor.get_skills()
+    keyboard = [[InlineKeyboardButton(skill, callback_data=skill)] for skill in skills] + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
+
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    query.edit_message_text("Выберите навыки для вашего персонажа:", reply_markup=reply_markup)
+
+    return CHOOSING_SKILLS
+
+def choosing_skills(update: Update, context: CallbackContext) -> int:
+    """Обработка выбора навыков."""
+    query = update.callback_query
+    query.answer()
+    constructor.set_skills(query.data)
+    gender_options = GENDER_OPTIONS
+    keyboard = [[InlineKeyboardButton(gender, callback_data=gender) for gender in gender_options]] + [[InlineKeyboardButton('', callback_data='generate')]]
+
     reply_markup = InlineKeyboardMarkup(keyboard)
     query.edit_message_text("Выберите пол для вашего персонажа:", reply_markup=reply_markup)
+
     return CHOOSING_GENDER
 
 def choosing_gender(update: Update, context: CallbackContext) -> None:
@@ -121,8 +160,10 @@ def get_conversation_handler():
         entry_points=[CommandHandler('start', start)],
         states={
             CONSTRUCTOR_START: [CallbackQueryHandler(constructor_start)],
-            CHOOSING_RACE: [CallbackQueryHandler(choosing_race)],
             CHOOSING_CLASS: [CallbackQueryHandler(choosing_class)],
+            CHOOSING_RACE: [CallbackQueryHandler(choosing_race)],
+            CHOOSING_CHARACTERISTICS: [CallbackQueryHandler(choosing_characteristics)],
+            CHOOSING_SKILLS: [CallbackQueryHandler(choosing_skills)],
             CHOOSING_GENDER: [CallbackQueryHandler(choosing_gender)]
         },
         fallbacks=[]
