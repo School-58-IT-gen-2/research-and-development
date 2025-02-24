@@ -9,7 +9,7 @@ def read_json_file(file_path):
 
 class CharConstructor:
     def __init__(self):
-        player_list = {
+        self.player_list = {
             "race": "",
             "character_class": "",
             "initiative": 1,
@@ -52,11 +52,17 @@ class CharConstructor:
         return read_json_file('json_data\main_constructor.json')['Classes']
     
     def set_class(self, char_class: str):
-        self.char_class = char_class
+        self.player_list['character_class'] = char_class
 
     def get_races(self):
         return read_json_file('json_data\main_constructor.json')['Races']
     
     def set_race(self, char_race: str):
-        self.char_class = char_race
+        self.player_list['race'] = char_race
+        
+    def get_characteristics(self):
+        return read_json_file('json_data\main_constructor.json')["Classes"][self.player_list["character_class"]]["Рекомендуемые характеристики"]
+    
+    def set_characteristics(self):
+        pass
 
