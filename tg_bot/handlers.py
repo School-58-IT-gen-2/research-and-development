@@ -101,13 +101,14 @@ def choosing_characteristics(update: Update, context: CallbackContext) -> int:
     query.answer()
     
     constructor.set_characteristics(query.data)
+    skills_body = constructor.get_skills()
+    skills = skills_body["skills_list"]
 
-    skills = constructor.get_skills()
     keyboard = [[InlineKeyboardButton(skill, callback_data=skill)] for skill in skills] + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
 
 
     reply_markup = InlineKeyboardMarkup(keyboard)
-    query.edit_message_text("Выберите навыки для вашего персонажа:", reply_markup=reply_markup)
+    query.edit_message_text(f"Выберите навыки для вашего персонажа [{skills_body['skills_count']+1}/{skills_body['skills_limit']}]:", reply_markup=reply_markup)
 
     return CHOOSING_SKILLS
 
@@ -115,7 +116,19 @@ def choosing_skills(update: Update, context: CallbackContext) -> int:
     """Обработка выбора навыков."""
     query = update.callback_query
     query.answer()
-    constructor.set_skills(query.data)
+    lim = constructor.add_skill(query.data)
+    if lim == 'more':
+        skills_body = constructor.get_skills()
+        skills = skills_body["skills_list"]
+
+        keyboard = [[InlineKeyboardButton(skill, callback_data=skill)] for skill in skills] + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
+
+
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        query.edit_message_text(f"Выберите навыки для вашего персонажа [{skills_body['skills_count']+1}/{skills_body['skills_limit']}]:", reply_markup=reply_markup)
+
+        return CHOOSING_SKILLS
+
     gender_options = GENDER_OPTIONS
     keyboard = [[InlineKeyboardButton(gender, callback_data=gender) for gender in gender_options]] + [[InlineKeyboardButton('', callback_data='generate')]]
 

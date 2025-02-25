@@ -1,5 +1,5 @@
 import json
-
+import random
 
 def read_json_file(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
@@ -47,6 +47,7 @@ class CharConstructor:
             "attack_and_damage_values":{},
             "worldview": ""
         }
+        self.skills_counter = 0
 
     def get_classes(self):
         return read_json_file('json_data\main_constructor.json')['Classes']
@@ -67,7 +68,30 @@ class CharConstructor:
     def set_characteristics(self, characteristics):
         pass
 
-    def set_skills(self, skills):
-        pass
+    def add_skill(self, skill):
+        if skill == 'random':
+            skills_list = read_json_file('json_data\class_constructor.json')["Classes"][self.player_list["character_class"]]["Навыки"]["Список"]
+            print(skills_list)
+            print(self.player_list['skills'])
+            for skill in self.player_list["skills"]:
+                print(skill)
+                skills_list.remove(skill)
+            
+            self.player_list['skills'].append(random.choice(skills_list))
+        else:
+            self.player_list['skills'].append(skill)
+        self.skills_counter += 1
+        skills_max_count = read_json_file('json_data\class_constructor.json')["Classes"][self.player_list["character_class"]]["Навыки"]["Количество"]
+        if self.skills_counter == skills_max_count:
+            return 'thats it'
+        return 'more'
+        
     def get_skills(self):
-        return ['1','2','3']
+
+        
+        skills_list = read_json_file('json_data\class_constructor.json')["Classes"][self.player_list["character_class"]]["Навыки"]["Список"]
+        for skill in self.player_list["skills"]:
+
+            skills_list.remove(skill)
+
+        return {"skills_list": skills_list, "skills_count": self.skills_counter, "skills_limit": read_json_file('json_data\class_constructor.json')["Classes"][self.player_list["character_class"]]["Навыки"]["Количество"]}
