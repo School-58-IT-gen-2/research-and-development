@@ -26,7 +26,7 @@ class CharConstructor:
             "valuables":{},
             "name": "",
             "stat_modifiers":{"strength":0,"dexterity":0,"constitution":0,"intelligence":0,"wisdom":0,"charisma":0},
-            "stats":{"strength":10,"dexterity":10,"constitution":10,"intelligence":10,"wisdom":10,"charisma":10},
+            "stats":{"strength":None,"dexterity":None,"constitution":None,"intelligence":None,"wisdom":None,"charisma":None},
             "backstory": "",
             "notes": "",
             "diary": "",
@@ -48,6 +48,7 @@ class CharConstructor:
             "worldview": ""
         }
         self.skills_counter = 0
+        self.__characteristic_limit = 27
 
     def get_classes(self):
         return read_json_file('json_data\main_constructor.json')['Classes']
@@ -62,11 +63,27 @@ class CharConstructor:
         self.player_list['race'] = char_race
         
     def get_characteristics(self):
-        return ['1','2','3']
-        return read_json_file('json_data\main_constructor.json')["Classes"][self.player_list["character_class"]]["Рекомендуемые характеристики"]
+        characteristics_translate = {'strength': 'Сила', "dexterity": "Ловкость",
+                                     "constitution": "Телосложение", "intelligence": "Интеллект",
+                                     "wisdom": "Мудрость", "charisma": "Харизма"}
+        target_characteristic = next((k for k, v in self.player_list['stats'].items() if v is None), None)
+        
+        if target_characteristic == None: return None, None, None
+        
+        recomended_str = read_json_file('json_data\class_constructor.json')["Classes"][self.player_list["character_class"]]["Рекомендуемые характеристики"][characteristics_translate[target_characteristic]]
+        
+        recomended_min, recomended_max = list(map(int, recomended_str.split('-')))
+        recomended_btns = list(map(str, range(8, min(16, recomended_max + 3))))
+        
+        recomended_btns = list(filter(lambda x: (9 if int(x) == 15 else int(x) - 8) <= self.__characteristic_limit, recomended_btns))
+        recomended_to_class = list(map(str, list(range(recomended_min, recomended_max + 1))))
+        
+        return characteristics_translate[target_characteristic], recomended_btns, recomended_to_class
     
     def set_characteristics(self, characteristics):
-        pass
+        target_characteristic = next((k for k, v in self.player_list['stats'].items() if v is None), None)
+        self.__characteristic_limit -= 9 if int(characteristics) == 15 else int(characteristics) - 8
+        exec(f"self.player_list['stats']['{target_characteristic}'] = {int(characteristics)}")
 
     def add_skill(self, skill):
         if skill == 'random':
