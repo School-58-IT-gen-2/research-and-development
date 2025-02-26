@@ -87,25 +87,37 @@ def choosing_race(update: Update, context: CallbackContext) -> int:
     query.answer()
     constructor.set_race(query.data)
 
-    characteristics = constructor.get_characteristics()
-    keyboard = [[InlineKeyboardButton(characteristic, callback_data=characteristic)] for characteristic in characteristics] + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
+    characteristic, characteristics_btns, recomended = constructor.get_characteristics()
+
+    btns = characteristics_btns
+    keyboard = [[InlineKeyboardButton(skill + '⭐(Рекомендуется)' if skill in recomended else skill, callback_data=skill)] for skill in btns] + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
 
     
 
     reply_markup = InlineKeyboardMarkup(keyboard)
-    query.edit_message_text("Выберите характеристики для вашего персонажа:", reply_markup=reply_markup)
+    query.edit_message_text(f"Выберите характеристику {characteristic.upper()} для вашего персонажа:", reply_markup=reply_markup)
     return CHOOSING_CHARACTERISTICS
+
 def choosing_characteristics(update: Update, context: CallbackContext) -> int:
 
     query = update.callback_query
     query.answer()
     
     constructor.set_characteristics(query.data)
+    characteristic, characteristics_btns, recomended = constructor.get_characteristics()
+    
+    if characteristics_btns != None:
+        keyboard = [[InlineKeyboardButton(skill + '⭐(Рекомендуется)' if skill in recomended else skill, callback_data=skill)] for skill in characteristics_btns] + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
+
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        query.edit_message_text(f"Выберите характеристику {characteristic.upper()} для вашего персонажа:", reply_markup=reply_markup)
+        return CHOOSING_CHARACTERISTICS
+
+    
     skills_body = constructor.get_skills()
     skills = skills_body["skills_list"]
-
+    
     keyboard = [[InlineKeyboardButton(skill, callback_data=skill)] for skill in skills] + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
-
 
     reply_markup = InlineKeyboardMarkup(keyboard)
     query.edit_message_text(f"Выберите навыки для вашего персонажа [{skills_body['skills_count']+1}/{skills_body['skills_limit']}]:", reply_markup=reply_markup)
