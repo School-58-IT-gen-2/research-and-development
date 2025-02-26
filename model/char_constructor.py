@@ -95,3 +95,18 @@ class CharConstructor:
             skills_list.remove(skill)
 
         return {"skills_list": skills_list, "skills_count": self.skills_counter, "skills_limit": read_json_file('json_data\class_constructor.json')["Classes"][self.player_list["character_class"]]["Навыки"]["Количество"]}
+    
+    def add_weapon(self, weapon):
+        return 'thats it'
+    
+    def get_weapons(self):
+        return {'weapons_list': ['1', '2', '3'], 'weapons_count': 0, 'weapons_limit': 1}
+    
+    def set_age(self, age):
+        if age == 'random':
+            self.player_list['age'] = random.randint(1, 65)
+        self.player_list['age'] = age
+
+    def set_story(self, story):
+        if story == 'random':
+            return read_json_file('not_in_use/lore.json')['races'][self.race]

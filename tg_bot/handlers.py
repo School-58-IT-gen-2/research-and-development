@@ -6,7 +6,7 @@ from config import SUPABASE_URL, SUPABASE_KEY
 from model.char_constructor import CharConstructor
 import requests
 
-CONSTRUCTOR_START, CHOOSING_CLASS, CHOOSING_RACE, CHOOSING_CHARACTERISTICS, CHOOSING_SKILLS, CHOOSING_GENDER = range(6)
+CONSTRUCTOR_START, CHOOSING_CLASS, CHOOSING_RACE, CHOOSING_CHARACTERISTICS, CHOOSING_SKILLS, CHOOSING_WEAPON, CHOOSING_AGE, CHOOSING_STORY, CHOOSING_GENDER = range(6)
 URL = "https://rnd.questhub.pro/create-character-list"
 db = DBSource(SUPABASE_URL, SUPABASE_KEY)
 db.connect()
@@ -129,13 +129,50 @@ def choosing_skills(update: Update, context: CallbackContext) -> int:
 
         return CHOOSING_SKILLS
 
-    gender_options = GENDER_OPTIONS
-    keyboard = [[InlineKeyboardButton(gender, callback_data=gender) for gender in gender_options]] + [[InlineKeyboardButton('', callback_data='generate')]]
+    weapons = constructor.get_weapons()
+    keyboard = [[InlineKeyboardButton(gender, callback_data=gender) for gender in weapons['weapons_list']]] + [[InlineKeyboardButton('Выбрать случайное', callback_data='generate')]]
 
     reply_markup = InlineKeyboardMarkup(keyboard)
-    query.edit_message_text("Выберите пол для вашего персонажа:", reply_markup=reply_markup)
+    query.edit_message_text(f"Выберите оружие для вашего персонажа [{weapons['weapons_count']}/{weapons['weapons_limit']}]:", reply_markup=reply_markup)
 
-    return CHOOSING_GENDER
+    return CHOOSING_WEAPON
+
+
+def choosing_weapon(update: Update, context: CallbackContext) -> int:
+    query = update.callback_query
+    query.answer()
+    lim = constructor.add_weapon(query.data)
+    if lim =='more':
+        weapons = constructor.get_weapons()
+        weapons_list = weapons['weapons_list']
+        keyboard = [[InlineKeyboardButton(weapon, callback_data=weapon) for weapon in weapons_list]] + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        query.edit_message_text(f"Выберите оружие для вашего персонажа [{weapons['weapons_count']+1}/{weapons['weapons_limit']}]:", reply_markup=reply_markup)
+        return CHOOSING_WEAPON
+
+    keyboard = [[InlineKeyboardButton('Выбрать случайный', callback_data='random')]]
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    query.edit_message_text("Введите возраст персонажа:", reply_markup=reply_markup)
+
+def choosing_age(update: Update, context: CallbackContext) -> None:
+    """Handles age selection and submits the data to the server."""
+    query = update.callback_query
+    query.answer()
+    
+    if query.data == 'random':
+        constructor.set_age(query.data)
+    else:
+        constructor.set_age(update.message.text)
+
+    keyboard = [[InlineKeyboardButton('Выбрать случайный', callback_data='random')]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    update.message.reply_text("Введите предысторию персонажа:", reply_markup=reply_markup)
+
+    return CHOOSING_STORY
+
+def choosing_story(update: Update, context: CallbackContext) -> None:
+    
 
 def choosing_gender(update: Update, context: CallbackContext) -> None:
     """Handles gender selection and submits the data to the server."""
