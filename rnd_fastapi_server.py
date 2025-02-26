@@ -5,6 +5,7 @@ import json
 import random
 from db_source import DBSource
 import uvicorn
+import uuid
 from dotenv import load_dotenv
 import os
 import requests
@@ -291,7 +292,7 @@ def choose(gender: str, race: str, character_class: str):
     tools = race_file["starting_equipment"]["tools"]    
     random.shuffle(tools)
     player_list["inventory"].append(tools[0])
-    player_list["inventory"] = [{"name":i} for i in player_list["inventory"]]
+    player_list["inventory"] = [{"name":i,"id":str(uuid.uuid4()),"description":"крутой итем!!!","count":1} for i in player_list["inventory"]]
          
     #worldview
     keys = []
