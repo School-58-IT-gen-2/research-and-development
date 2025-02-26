@@ -1,12 +1,12 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import CommandHandler, CallbackQueryHandler, ConversationHandler, CallbackContext
+from telegram.ext import CommandHandler, CallbackQueryHandler, ConversationHandler, CallbackContext, MessageHandler, Filters
 from tg_bot.utils import format_character_card, escape_markdown_v2, get_key_by_value
 from db.db_source import DBSource
 from config import SUPABASE_URL, SUPABASE_KEY
 from model.char_constructor import CharConstructor
 import requests
 
-CONSTRUCTOR_START, CHOOSING_CLASS, CHOOSING_RACE, CHOOSING_CHARACTERISTICS, CHOOSING_SKILLS, CHOOSING_WEAPON, CHOOSING_AGE, CHOOSING_STORY, CHOOSING_GENDER = range(6)
+CONSTRUCTOR_START, CHOOSING_CLASS, CHOOSING_RACE, CHOOSING_CHARACTERISTICS, CHOOSING_SKILLS, CHOOSING_WEAPON, CHOOSING_AGE, CHOOSING_STORY, CHOOSING_NAME, CHOOSING_GENDER = range(10)
 URL = "https://rnd.questhub.pro/create-character-list"
 db = DBSource(SUPABASE_URL, SUPABASE_KEY)
 db.connect()
@@ -166,12 +166,13 @@ def choosing_weapon(update: Update, context: CallbackContext) -> int:
 
     reply_markup = InlineKeyboardMarkup(keyboard)
     query.edit_message_text("Введите возраст персонажа:", reply_markup=reply_markup)
+    return CHOOSING_AGE
 
 def choosing_age(update: Update, context: CallbackContext) -> None:
     """Handles age selection and submits the data to the server."""
     query = update.callback_query
     query.answer()
-    
+    print(query.data)
     if query.data == 'random':
         constructor.set_age(query.data)
     else:
@@ -179,12 +180,39 @@ def choosing_age(update: Update, context: CallbackContext) -> None:
 
     keyboard = [[InlineKeyboardButton('Выбрать случайный', callback_data='random')]]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    update.message.reply_text("Введите предысторию персонажа:", reply_markup=reply_markup)
+    query.message.reply_text("Введите предысторию персонажа:", reply_markup=reply_markup)
 
     return CHOOSING_STORY
 
 def choosing_story(update: Update, context: CallbackContext) -> None:
+    query = update.callback_query
+    query.answer()
     
+    if query.data == 'random':
+        constructor.set_story(query.data)
+    else:
+        constructor.set_story(update.message.text)
+
+    keyboard = [[InlineKeyboardButton('Выбрать случайный', callback_data='random')]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    update.message.reply_text("Введите имя персонажа:", reply_markup=reply_markup)
+
+def choosing_name(update: Update, context: CallbackContext) -> None:
+    query = update.callback_query
+    query.answer()
+    
+    if query.data == 'random':
+        constructor.set_name(query.data)
+    else:
+        constructor.set_name(update.message.text)
+
+    keyboard = [[InlineKeyboardButton('Мужской', callback_data='male')], [InlineKeyboardButton('Женский', callback_data='female')], [InlineKeyboardButton('Выбрать случайный', callback_data='random')]]
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    update.message.reply_text("Выберите пол персонажа:", reply_markup=reply_markup)
+
+
+    return CHOOSING_GENDER
 
 def choosing_gender(update: Update, context: CallbackContext) -> None:
     """Handles gender selection and submits the data to the server."""
@@ -226,6 +254,10 @@ def get_conversation_handler():
             CHOOSING_RACE: [CallbackQueryHandler(choosing_race)],
             CHOOSING_CHARACTERISTICS: [CallbackQueryHandler(choosing_characteristics)],
             CHOOSING_SKILLS: [CallbackQueryHandler(choosing_skills)],
+            CHOOSING_WEAPON: [CallbackQueryHandler(choosing_weapon)],
+            CHOOSING_AGE: [MessageHandler(Filters.text & ~Filters.command, choosing_age)],
+            CHOOSING_STORY: [CallbackQueryHandler(choosing_story)],
+            CHOOSING_NAME: [CallbackQueryHandler(choosing_name)],
             CHOOSING_GENDER: [CallbackQueryHandler(choosing_gender)]
         },
         fallbacks=[]
