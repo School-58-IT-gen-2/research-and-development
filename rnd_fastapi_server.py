@@ -260,6 +260,7 @@ def choose(gender: str, race: str, character_class: str):
     #player_list["weapons_and_equipment"][weapon] = weapon_file["weapons"][weapon]
     item = weapon_file["weapons"][weapon]
     item["name"] = weapon
+    item["id"] = str(uuid.uuid4())
     player_list["weapons_and_equipment"].append(item)
     spells_file = supabase.get_spells_data()
 
