@@ -6,6 +6,8 @@ def read_json_file(file_path):
         data = json.load(file)
     return data
 
+clases = {'Следопыт':'pathfinder',"Варвар":"barbarian","Бард":"bard","Плут":"dodger","Друид":"druid","Колдун":"magician","Монах":"monk","Паладин":"paladin","Жрец":"priest","Маг":"warlock","Воин":"warrior","Волшебник":"wizzard"}
+races = {"Дварф":'dwarf',"Эльф":'elves','Полурослик':"halfling",'Человек':"human",'Драконорожденный':"dragonborn",'Гном':"gnom",'Полуэльф':"halfelf",'Полуорк':"halforc",'Тифлинг':"tiefling"}
 
 class CharConstructor:
     def __init__(self):
@@ -56,12 +58,14 @@ class CharConstructor:
     
     def set_class(self, char_class: str):
         self.player_list['character_class'] = char_class
+        print(f'Выбран класс: {char_class}')
 
     def get_races(self):
         return read_json_file('json_data\main_constructor.json')['Races']
     
     def set_race(self, char_race: str):
         self.player_list['race'] = char_race
+        print(f'Выбрана раса: {char_race}')
         
     def get_characteristics(self):
         characteristics_translate = {'strength': 'Сила', "dexterity": "Ловкость",
@@ -85,6 +89,7 @@ class CharConstructor:
         target_characteristic = next((k for k, v in self.player_list['stats'].items() if v is None), None)
         self.__characteristic_limit -= 9 if int(characteristics) == 15 else int(characteristics) - 8
         exec(f"self.player_list['stats']['{target_characteristic}'] = {int(characteristics)}")
+        print(f'Выбрана: {target_characteristic}, значение: {characteristics}')
 
     def add_skill(self, skill):
         if skill == 'random':
@@ -100,6 +105,7 @@ class CharConstructor:
             self.player_list['skills'].append(skill)
         self.skills_counter += 1
         skills_max_count = read_json_file('json_data\class_constructor.json')["Classes"][self.player_list["character_class"]]["Навыки"]["Количество"]
+        print(f'Выбран навык: {skill}, количество навыков: {self.skills_counter}, максимальное количество навыков: {skills_max_count}')
         if self.skills_counter == skills_max_count:
             return 'thats it'
         return 'more'

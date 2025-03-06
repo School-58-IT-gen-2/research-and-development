@@ -1,5 +1,5 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import CommandHandler, CallbackQueryHandler, ConversationHandler, CallbackContext
+from telegram.ext import CommandHandler, CallbackQueryHandler, ConversationHandler, CallbackContext, MessageHandler, Filters
 from tg_bot.utils import format_character_card, escape_markdown_v2, get_key_by_value
 from db.db_source import DBSource
 from config import SUPABASE_URL, SUPABASE_KEY
@@ -166,7 +166,72 @@ def choosing_inventory(update: Update, context: CallbackContext) -> int:
     keyboard = [[InlineKeyboardButton(gender, callback_data=gender) for gender in gender_options]] + [[InlineKeyboardButton('', callback_data='generate')]]
 
     reply_markup = InlineKeyboardMarkup(keyboard)
-    query.edit_message_text("Выберите пол для вашего персонажа:", reply_markup=reply_markup)
+    query.edit_message_text(f"Выберите оружие для вашего персонажа [{weapons['weapons_count']}/{weapons['weapons_limit']}]:", reply_markup=reply_markup)
+
+    return CHOOSING_WEAPON
+
+
+def choosing_weapon(update: Update, context: CallbackContext) -> int:
+    query = update.callback_query
+    query.answer()
+    lim = constructor.add_weapon(query.data)
+    if lim =='more':
+        weapons = constructor.get_weapons()
+        weapons_list = weapons['weapons_list']
+        keyboard = [[InlineKeyboardButton(weapon, callback_data=weapon) for weapon in weapons_list]] + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        query.edit_message_text(f"Выберите оружие для вашего персонажа [{weapons['weapons_count']+1}/{weapons['weapons_limit']}]:", reply_markup=reply_markup)
+        return CHOOSING_WEAPON
+
+    keyboard = [[InlineKeyboardButton('Выбрать случайный', callback_data='random')]]
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    query.edit_message_text("Введите возраст персонажа:", reply_markup=reply_markup)
+    return CHOOSING_AGE
+
+def choosing_age(update: Update, context: CallbackContext) -> None:
+    """Handles age selection and submits the data to the server."""
+    query = update.callback_query
+    query.answer()
+    print(query.data)
+    if query.data == 'random':
+        constructor.set_age(query.data)
+    else:
+        constructor.set_age(update.message.text)
+
+    keyboard = [[InlineKeyboardButton('Выбрать случайный', callback_data='random')]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    query.message.reply_text("Введите предысторию персонажа:", reply_markup=reply_markup)
+
+    return CHOOSING_STORY
+
+def choosing_story(update: Update, context: CallbackContext) -> None:
+    query = update.callback_query
+    query.answer()
+    
+    if query.data == 'random':
+        constructor.set_story(query.data)
+    else:
+        constructor.set_story(update.message.text)
+
+    keyboard = [[InlineKeyboardButton('Выбрать случайный', callback_data='random')]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    update.message.reply_text("Введите имя персонажа:", reply_markup=reply_markup)
+
+def choosing_name(update: Update, context: CallbackContext) -> None:
+    query = update.callback_query
+    query.answer()
+    
+    if query.data == 'random':
+        constructor.set_name(query.data)
+    else:
+        constructor.set_name(update.message.text)
+
+    keyboard = [[InlineKeyboardButton('Мужской', callback_data='male')], [InlineKeyboardButton('Женский', callback_data='female')], [InlineKeyboardButton('Выбрать случайный', callback_data='random')]]
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    update.message.reply_text("Выберите пол персонажа:", reply_markup=reply_markup)
+
 
     return CHOOSING_GENDER
 
