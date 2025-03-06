@@ -48,6 +48,7 @@ class CharConstructor:
             "worldview": ""
         }
         self.skills_counter = 0
+        self.inventory_counter = 0
         self.__characteristic_limit = 27
 
     def get_classes(self):
@@ -112,3 +113,12 @@ class CharConstructor:
             skills_list.remove(skill)
 
         return {"skills_list": skills_list, "skills_count": self.skills_counter, "skills_limit": read_json_file('json_data\class_constructor.json')["Classes"][self.player_list["character_class"]]["Навыки"]["Количество"]}
+    
+    def get_inventory(self) -> list[str]:
+        
+        options_list = read_json_file('json_data\class_constructor.json')["Classes"][self.player_list["character_class"]]["Опции инвентаря"]
+        return options_list
+    
+    def add_inventory(self):
+        pass
+        

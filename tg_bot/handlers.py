@@ -6,7 +6,7 @@ from config import SUPABASE_URL, SUPABASE_KEY
 from model.char_constructor import CharConstructor
 import requests
 
-CONSTRUCTOR_START, CHOOSING_CLASS, CHOOSING_RACE, CHOOSING_CHARACTERISTICS, CHOOSING_SKILLS, CHOOSING_GENDER = range(6)
+CONSTRUCTOR_START, CHOOSING_CLASS, CHOOSING_RACE, CHOOSING_CHARACTERISTICS, CHOOSING_SKILLS, CHOOSING_INVENTORY, CHOOSING_GENDER = range(7)
 URL = "https://rnd.questhub.pro/create-character-list"
 db = DBSource(SUPABASE_URL, SUPABASE_KEY)
 db.connect()
@@ -141,6 +141,27 @@ def choosing_skills(update: Update, context: CallbackContext) -> int:
 
         return CHOOSING_SKILLS
 
+    inventory_body = constructor.get_inventory()[constructor.inventory_counter]
+    inventory_strs = [' + '.join(i) for i in inventory_body]
+    
+    keyboard = [[InlineKeyboardButton(option, callback_data=option)] for option in inventory_strs] + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    query.edit_message_text(f"Выберите опцию для инвентаря вашего персонажа [{constructor.inventory_counter + 1}/{len(inventory_body)}]:", reply_markup=reply_markup)
+    return CHOOSING_INVENTORY
+
+def choosing_inventory(update: Update, context: CallbackContext) -> int:
+
+    query = update.callback_query
+    
+    constructor.set_class(query.data)
+
+    races = constructor.get_races()
+    keyboard = [[InlineKeyboardButton(race, callback_data=race)] for race in races] + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
+
+    query.answer()
+    
+
     gender_options = GENDER_OPTIONS
     keyboard = [[InlineKeyboardButton(gender, callback_data=gender) for gender in gender_options]] + [[InlineKeyboardButton('', callback_data='generate')]]
 
@@ -189,6 +210,7 @@ def get_conversation_handler():
             CHOOSING_RACE: [CallbackQueryHandler(choosing_race)],
             CHOOSING_CHARACTERISTICS: [CallbackQueryHandler(choosing_characteristics)],
             CHOOSING_SKILLS: [CallbackQueryHandler(choosing_skills)],
+            CHOOSING_INVENTORY: [CallbackQueryHandler(choosing_inventory)],
             CHOOSING_GENDER: [CallbackQueryHandler(choosing_gender)]
         },
         fallbacks=[]
