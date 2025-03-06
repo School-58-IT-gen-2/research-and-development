@@ -6,7 +6,7 @@ from config import SUPABASE_URL, SUPABASE_KEY
 from model.char_constructor import CharConstructor
 import requests
 
-CONSTRUCTOR_START, CHOOSING_CLASS, CHOOSING_RACE, CHOOSING_CHARACTERISTICS, CHOOSING_SKILLS, CHOOSING_INVENTORY, CHOOSING_GENDER = range(7)
+CONSTRUCTOR_START, CHOOSING_CLASS, CHOOSING_RACE, CHOOSING_CHARACTERISTICS, CHOOSING_SKILLS, CHOOSING_INVENTORY, CHOOSING_GENDER, CHOOSING_AGE, CHOOSING_STORY = range(9)
 URL = "https://rnd.questhub.pro/create-character-list"
 db = DBSource(SUPABASE_URL, SUPABASE_KEY)
 db.connect()
@@ -162,32 +162,32 @@ def choosing_inventory(update: Update, context: CallbackContext) -> int:
     query.answer()
     
 
-    gender_options = GENDER_OPTIONS
-    keyboard = [[InlineKeyboardButton(gender, callback_data=gender) for gender in gender_options]] + [[InlineKeyboardButton('', callback_data='generate')]]
+    keyboard = [[InlineKeyboardButton('Мужской', callback_data='male')], [InlineKeyboardButton('Женский', callback_data='female')], [InlineKeyboardButton('Выбрать случайный', callback_data='random')]]
 
     reply_markup = InlineKeyboardMarkup(keyboard)
-    query.edit_message_text(f"Выберите оружие для вашего персонажа [{weapons['weapons_count']}/{weapons['weapons_limit']}]:", reply_markup=reply_markup)
-
-    return CHOOSING_WEAPON
+    update.message.reply_text("Выберите пол персонажа:", reply_markup=reply_markup)
 
 
-def choosing_weapon(update: Update, context: CallbackContext) -> int:
-    query = update.callback_query
-    query.answer()
-    lim = constructor.add_weapon(query.data)
-    if lim =='more':
-        weapons = constructor.get_weapons()
-        weapons_list = weapons['weapons_list']
-        keyboard = [[InlineKeyboardButton(weapon, callback_data=weapon) for weapon in weapons_list]] + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        query.edit_message_text(f"Выберите оружие для вашего персонажа [{weapons['weapons_count']+1}/{weapons['weapons_limit']}]:", reply_markup=reply_markup)
-        return CHOOSING_WEAPON
+    return CHOOSING_GENDER
 
-    keyboard = [[InlineKeyboardButton('Выбрать случайный', callback_data='random')]]
 
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    query.edit_message_text("Введите возраст персонажа:", reply_markup=reply_markup)
-    return CHOOSING_AGE
+# def choosing_weapon(update: Update, context: CallbackContext) -> int:
+#     query = update.callback_query
+#     query.answer()
+#     lim = constructor.add_weapon(query.data)
+#     if lim =='more':
+#         weapons = constructor.get_weapons()
+#         weapons_list = weapons['weapons_list']
+#         keyboard = [[InlineKeyboardButton(weapon, callback_data=weapon) for weapon in weapons_list]] + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
+#         reply_markup = InlineKeyboardMarkup(keyboard)
+#         query.edit_message_text(f"Выберите оружие для вашего персонажа [{weapons['weapons_count']+1}/{weapons['weapons_limit']}]:", reply_markup=reply_markup)
+#         return CHOOSING_WEAPON
+
+#     keyboard = [[InlineKeyboardButton('Выбрать случайный', callback_data='random')]]
+
+#     reply_markup = InlineKeyboardMarkup(keyboard)
+#     query.edit_message_text("Введите возраст персонажа:", reply_markup=reply_markup)
+#     return CHOOSING_AGE
 
 def choosing_age(update: Update, context: CallbackContext) -> None:
     """Handles age selection and submits the data to the server."""
@@ -276,7 +276,9 @@ def get_conversation_handler():
             CHOOSING_CHARACTERISTICS: [CallbackQueryHandler(choosing_characteristics)],
             CHOOSING_SKILLS: [CallbackQueryHandler(choosing_skills)],
             CHOOSING_INVENTORY: [CallbackQueryHandler(choosing_inventory)],
-            CHOOSING_GENDER: [CallbackQueryHandler(choosing_gender)]
+            CHOOSING_GENDER: [CallbackQueryHandler(choosing_gender)],
+            CHOOSING_AGE: [CallbackQueryHandler(choosing_age)],
+            CHOOSING_STORY: [CallbackQueryHandler(choosing_story)]
         },
         fallbacks=[]
     )
