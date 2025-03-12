@@ -10,7 +10,7 @@ def read_json_file(file_path):
     return data
 
 clases = {'Следопыт':'pathfinder',"Варвар":"barbarian","Бард":"bard","Плут":"dodger","Друид":"druid","Колдун":"magician","Монах":"monk","Паладин":"paladin","Жрец":"priest","Маг":"warlock","Воин":"warrior","Волшебник":"wizzard"}
-races = {"Дварф":'dwarf',"Эльф":'elves','Полурослик':"halfling",'Человек':"human",'Драконорожденный':"dragonborn",'Гном':"gnom",'Полуэльф':"halfelf",'Полуорк':"halforc",'Тифлинг':"tiefling"}
+races = {"Дварф":'dwarf',"Эльф":'elves','Полурослик':"halfling",'Человек':"human",'Драконорожденный':"dragonborn",'Гном':"gnom",'Полуэльф':"halfelf",'Полуорк':"halforc",'Тифлинг':"tiefling",'Орк':"ork"}
 
 class CharConstructor:
     def __init__(self):
@@ -158,6 +158,8 @@ class CharConstructor:
 
 
     def set_story(self, story):
+        if story == 'random':
+            story = random.choice(self.supabase.get_lore_data()['races'][races[self.player_list['race']]])
         print(f'Выбрана предыстория: {story}')
 
 
