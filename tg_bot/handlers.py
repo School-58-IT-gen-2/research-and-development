@@ -142,9 +142,21 @@ def choosing_skills(update: Update, context: CallbackContext) -> int:
         return CHOOSING_SKILLS
 
     inventory_body = constructor.get_inventory()[constructor.inventory_counter]
-    inventory_strs = [' + '.join(i) for i in inventory_body]
-    
-    keyboard = [[InlineKeyboardButton(option, callback_data=option)] for option in inventory_strs] + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
+    inventory_strs = []#[' + '.join(i)[:28] + '...' if len(' + '.join(i)) > 32 else ' + '.join(i) for i in inventory_body]
+    for i in inventory_body:
+        if len(i) == 1:
+            inventory_strs.append(i[0])
+        else:
+            options_m = []
+            for j in list(set(i)):
+                if i.count(j) > 1:
+                    options_m.append(j + f'({i.count(j)})')
+                else:
+                    options_m.append(j)
+            inventory_strs.append('+'.join(options_m))
+
+    print(1111111111111, inventory_strs)
+    keyboard = [[InlineKeyboardButton(option if len(option) < 32 else '...', callback_data=option)] for option in inventory_strs] + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
 
     reply_markup = InlineKeyboardMarkup(keyboard)
     query.edit_message_text(f"Выберите опцию для инвентаря вашего персонажа [{constructor.inventory_counter + 1}/{constructor.inventory_lim}]:", reply_markup=reply_markup)
@@ -159,9 +171,20 @@ def choosing_inventory(update: Update, context: CallbackContext) -> int:
 
     if constructor.inventory_counter != constructor.inventory_lim:
         inventory_body = constructor.get_inventory()[constructor.inventory_counter]
-        inventory_strs = [' + '.join(i)[:28] + '...' if len(' + '.join(i)) > 32 else ' + '.join(i) for i in inventory_body]
+        inventory_strs = []#[' + '.join(i)[:28] + '...' if len(' + '.join(i)) > 32 else ' + '.join(i) for i in inventory_body]
+        for i in inventory_body:
+            if len(i) == 1:
+                inventory_strs.append(i[0])
+            else:
+                options_m = []
+                for j in list(set(i)):
+                    if i.count(j) > 1:
+                        options_m.append(j + f'({i.count(j)})')
+                    else:
+                        options_m.append(j)
+                inventory_strs.append(' + '.join(options_m))
     
-        keyboard = [[InlineKeyboardButton(option, callback_data=option)] for option in inventory_strs] + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
+        keyboard = [[InlineKeyboardButton(option if len(option) < 32 else option[:28] + '...', callback_data=option)] for option in inventory_strs] + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
 
         reply_markup = InlineKeyboardMarkup(keyboard)
         query.edit_message_text(f"Выберите опцию для инвентаря вашего персонажа [{constructor.inventory_counter + 1}/{constructor.inventory_lim}]:", reply_markup=reply_markup)
