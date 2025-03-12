@@ -149,3 +149,21 @@ class CharConstructor:
                 
         self.inventory_counter += 1
         
+    def set_gender(self, gender):
+        print(f'Выбран гендер: {gender}')
+
+
+    def set_name(self, name):
+        print(f'Выбрано имя: {name}')
+
+
+    def set_story(self, story):
+        print(f'Выбрана предыстория: {story}')
+
+
+    def set_age(self, age):
+        print(f'Выбран возраст: {age}')
+
+    def get_result(self):
+        return "Персонаж:\n - гемор\n - мутор"
+
