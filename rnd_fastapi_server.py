@@ -221,6 +221,12 @@ def choose(gender: str, race: str, character_class: str):
         for j in i.keys():
             keys.append(j)
         player_list["traits_and_abilities"][i[keys[0]]] = i[keys[1]]
+    _traits = []
+    for i in player_list["traits_and_abilities"]:
+        _trait = {"name":i,"description":player_list["traits_and_abilities"][i],"id": str(uuid.uuid4())}
+        _traits.append(_trait)
+    player_list["traits_and_abilities"] = _traits
+            
 
     #Health_points
     hit_dice = class_file["class"]["hit_dice"].split('d')
@@ -275,6 +281,12 @@ def choose(gender: str, race: str, character_class: str):
 
     if character_class in spells_file["classes"].keys():
         player_list["spells"] = spells_file["classes"][character_class]
+        _spells = []
+        for i in player_list["spells"]:
+            _spell = {**{"name": i, "id": str(uuid.uuid4())},**player_list["spells"][i]}
+            _spells.append(_spell)
+        player_list["spells"] = _spells
+
     #inventory
     armor = race_file["starting_equipment"]["armor"]
     random.shuffle(armor)
@@ -313,4 +325,5 @@ def choose(gender: str, race: str, character_class: str):
     player_list["race"] = race_file["race"]["name"]
     return player_list
 
-print(choose("M", "Гном", "Воин"))
+#print(choose("M", "Гном", "Воин"))
+
