@@ -1,5 +1,8 @@
+import os
 import json
 import random
+from db.db_source import DBSource
+
 
 def read_json_file(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
@@ -51,7 +54,10 @@ class CharConstructor:
         }
         self.skills_counter = 0
         self.inventory_counter = 0
+        self.inventory_lim = 0
         self.__characteristic_limit = 27
+        self.supabase = DBSource(os.getenv("SUPABASE_URL"),os.getenv("SUPABASE_KEY"))
+        self.supabase.connect()
 
     def get_classes(self):
         return read_json_file('json_data\main_constructor.json')['Classes']
@@ -123,8 +129,23 @@ class CharConstructor:
     def get_inventory(self) -> list[str]:
         
         options_list = read_json_file('json_data\class_constructor.json')["Classes"][self.player_list["character_class"]]["Опции инвентаря"]
+        self.inventory_lim = len(options_list)
         return options_list
     
-    def add_inventory(self):
-        pass
+    def add_inventory(self, item: str):
+        #race_file = self.supabase.get_race_data_by_name(self.race)
+        for i in item.split(' + '):
+            weapon_file = self.supabase.get_weapon_data()
+            for i in self.player_list["weapons_and_equipment"]:
+                if i not in weapon_file["armor"]:
+                    self.player_list["attack_and_damage_values"][i] = weapon_file["weapons"][i]
+            
+            if i in weapon_file["weapons"].keys():
+                self.player_list["weapons_and_equipment"][i] = weapon_file["weapons"][i]
+            elif i in weapon_file['armor'].keys():
+                self.player_list["weapons_and_equipment"][i] = weapon_file['armor'][i]
+            else:
+                self.player_list['inventory']
+                
+        self.inventory_counter += 1
         

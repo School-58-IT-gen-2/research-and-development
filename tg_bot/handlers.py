@@ -147,25 +147,30 @@ def choosing_skills(update: Update, context: CallbackContext) -> int:
     keyboard = [[InlineKeyboardButton(option, callback_data=option)] for option in inventory_strs] + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
 
     reply_markup = InlineKeyboardMarkup(keyboard)
-    query.edit_message_text(f"Выберите опцию для инвентаря вашего персонажа [{constructor.inventory_counter + 1}/{len(inventory_body)}]:", reply_markup=reply_markup)
+    query.edit_message_text(f"Выберите опцию для инвентаря вашего персонажа [{constructor.inventory_counter + 1}/{constructor.inventory_lim}]:", reply_markup=reply_markup)
     return CHOOSING_INVENTORY
 
 def choosing_inventory(update: Update, context: CallbackContext) -> int:
 
     query = update.callback_query
-    
-    constructor.set_class(query.data)
-
-    races = constructor.get_races()
-    keyboard = [[InlineKeyboardButton(race, callback_data=race)] for race in races] + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
-
     query.answer()
     
+    constructor.add_inventory(query.data)
+
+    if constructor.inventory_counter != constructor.inventory_lim:
+        inventory_body = constructor.get_inventory()[constructor.inventory_counter]
+        inventory_strs = [' + '.join(i)[:28] + '...' if len(' + '.join(i)) > 32 else ' + '.join(i) for i in inventory_body]
+    
+        keyboard = [[InlineKeyboardButton(option, callback_data=option)] for option in inventory_strs] + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
+
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        query.edit_message_text(f"Выберите опцию для инвентаря вашего персонажа [{constructor.inventory_counter + 1}/{constructor.inventory_lim}]:", reply_markup=reply_markup)
+        return CHOOSING_INVENTORY
 
     keyboard = [[InlineKeyboardButton('Мужской', callback_data='male')], [InlineKeyboardButton('Женский', callback_data='female')], [InlineKeyboardButton('Выбрать случайный', callback_data='random')]]
 
     reply_markup = InlineKeyboardMarkup(keyboard)
-    update.message.reply_text("Выберите пол персонажа:", reply_markup=reply_markup)
+    query.edit_message_text("Выберите пол персонажа:", reply_markup=reply_markup)
 
 
     return CHOOSING_GENDER
@@ -191,6 +196,7 @@ def choosing_inventory(update: Update, context: CallbackContext) -> int:
 
 def choosing_age(update: Update, context: CallbackContext) -> None:
     """Handles age selection and submits the data to the server."""
+    return CHOOSING_STORY
     query = update.callback_query
     query.answer()
     print(query.data)
@@ -203,11 +209,32 @@ def choosing_age(update: Update, context: CallbackContext) -> None:
     reply_markup = InlineKeyboardMarkup(keyboard)
     query.message.reply_text("Введите предысторию персонажа:", reply_markup=reply_markup)
 
-    return CHOOSING_STORY
 
 def choosing_story(update: Update, context: CallbackContext) -> None:
     query = update.callback_query
     query.answer()
+    # data = {
+    #     "gender": context.user_data['gender'],
+    #     "race": get_key_by_value(RACES, context.user_data['race']),
+    #     "character_class": context.user_data['class']
+    # }
+
+    # try:
+    #     response = requests.post(URL, json=data)
+    #     if response.status_code == 200:
+    #         character_data = response.json()
+    #         # print("Character data from server:", character_data)  # Отладка
+    #         formatted_response = format_character_card(character_data)
+    #         formatted_response = escape_markdown_v2(formatted_response)  # Экранируем текст
+    #         query.message.reply_text(formatted_response, parse_mode='MarkdownV2')
+    #     else:
+    #         query.message.reply_text(f"Ошибка сервера: {response.status_code}")
+    # except Exception as e:
+    #     query.message.reply_text(f"Произошла ошибка: {str(e)}")
+
+    query.message.reply_text("Если хотите создать нового персонажа, введите /start.")
+    
+    return ConversationHandler.END
     
     if query.data == 'random':
         constructor.set_story(query.data)
@@ -217,6 +244,7 @@ def choosing_story(update: Update, context: CallbackContext) -> None:
     keyboard = [[InlineKeyboardButton('Выбрать случайный', callback_data='random')]]
     reply_markup = InlineKeyboardMarkup(keyboard)
     update.message.reply_text("Введите имя персонажа:", reply_markup=reply_markup)
+    
 
 def choosing_name(update: Update, context: CallbackContext) -> None:
     query = update.callback_query
@@ -241,29 +269,7 @@ def choosing_gender(update: Update, context: CallbackContext) -> None:
     query.answer()
     context.user_data['gender'] = query.data
 
-    data = {
-        "gender": context.user_data['gender'],
-        "race": get_key_by_value(RACES, context.user_data['race']),
-        "character_class": context.user_data['class']
-    }
-
-    try:
-        response = requests.post(URL, json=data)
-        if response.status_code == 200:
-            character_data = response.json()
-            # print("Character data from server:", character_data)  # Отладка
-            formatted_response = format_character_card(character_data)
-            formatted_response = escape_markdown_v2(formatted_response)  # Экранируем текст
-            query.message.reply_text(formatted_response, parse_mode='MarkdownV2')
-        else:
-            query.message.reply_text(f"Ошибка сервера: {response.status_code}")
-    except Exception as e:
-        query.message.reply_text(f"Произошла ошибка: {str(e)}")
-
-    query.message.reply_text("Если хотите создать нового персонажа, введите /start.")
-
-
-    return ConversationHandler.END
+    return CHOOSING_AGE
 
 def get_conversation_handler():
     """Возвращает ConversationHandler для бота."""
