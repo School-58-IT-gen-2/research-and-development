@@ -40,6 +40,8 @@ CLASSES = {
 
 GENDER_OPTIONS = ['M', 'W']
 
+long_callback = dict()
+
 def start(update: Update, context: CallbackContext) -> int:
     """Начало диалога: """
     keyboard = [[InlineKeyboardButton('Сгенерировать случайного персонажа', callback_data='random')], [InlineKeyboardButton('Конструктор персонажа', callback_data='constructor')]]
@@ -126,6 +128,8 @@ def choosing_characteristics(update: Update, context: CallbackContext) -> int:
 
 def choosing_skills(update: Update, context: CallbackContext) -> int:
     """Обработка выбора навыков."""
+    global long_callback
+    
     query = update.callback_query
     query.answer()
     lim = constructor.add_skill(query.data)
@@ -157,8 +161,8 @@ def choosing_skills(update: Update, context: CallbackContext) -> int:
 
     fixed_strs = [option if len(option) < 32 else ' + '.join(j if len(j) < 10 else j[:10] for j in option.split(' + ')) for option in inventory_strs]
     
-    print(1111111111111111111111, [(option, fixed_option) for option, fixed_option in (inventory_strs, fixed_strs)])
-    btns = [[InlineKeyboardButton(option, callback_data=option)] for option in inventory_strs]
+    long_callback = dict(zip(list(range(len(inventory_strs))), inventory_strs))
+    btns = [[InlineKeyboardButton(option, callback_data=inventory_strs.index(option))] for option in inventory_strs]
     keyboard = btns + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
 
     reply_markup = InlineKeyboardMarkup(keyboard)
@@ -167,10 +171,14 @@ def choosing_skills(update: Update, context: CallbackContext) -> int:
 
 def choosing_inventory(update: Update, context: CallbackContext) -> int:
 
+    global long_callback
+    
     query = update.callback_query
     query.answer()
     
-    constructor.add_inventory(query.data)
+    item = long_callback[int(query.data)]
+    
+    constructor.add_inventory(item)
 
     if constructor.inventory_counter != constructor.inventory_lim:
         inventory_body = constructor.get_inventory()[constructor.inventory_counter]
@@ -189,8 +197,8 @@ def choosing_inventory(update: Update, context: CallbackContext) -> int:
 
         fixed_strs = [option if len(option) < 32 else ' + '.join(j if len(j) < 10 else j[:10] for j in option.split(' + ')) for option in inventory_strs]
         
-        print(1111111111111111111111, [(option, fixed_option) for option, fixed_option in (inventory_strs, fixed_strs)])
-        btns = [[InlineKeyboardButton(fixed_option, callback_data=option)] for option, fixed_option in (inventory_strs, fixed_strs)]
+        long_callback = dict(zip(list(range(len(inventory_strs))), inventory_strs))
+        btns = [[InlineKeyboardButton(option, callback_data=inventory_strs.index(option))] for option in inventory_strs]
         keyboard = btns + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
 
         reply_markup = InlineKeyboardMarkup(keyboard)
