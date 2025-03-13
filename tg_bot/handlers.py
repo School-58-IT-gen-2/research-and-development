@@ -71,6 +71,7 @@ def choosing_class(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     
     constructor.set_class(query.data)
+    recomended_races = []
 
     races = constructor.get_races()
     keyboard = [[InlineKeyboardButton(race, callback_data=race)] for race in races] + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
@@ -276,9 +277,9 @@ def choosing_name(update: Update, context: CallbackContext) -> None:
     else:
         constructor.set_name(update.message.text)
 
-    result = constructor.get_result()
-
-    update.message.reply_text(result, reply_markup=ReplyKeyboardRemove())
+    formatted_response = format_character_card(constructor.player_list)
+    formatted_response = escape_markdown_v2(formatted_response)  # Экранируем текст
+    update.message.reply_text(formatted_response, parse_mode='MarkdownV2', reply_markup=ReplyKeyboardRemove())
 
     return ConversationHandler.END
 

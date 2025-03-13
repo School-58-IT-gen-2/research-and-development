@@ -65,8 +65,12 @@ class CharConstructor:
     def set_class(self, char_class: str):
         self.player_list['character_class'] = char_class
         print(f'Выбран класс: {char_class}')
+        self.set_saving_throws()
 
     def get_races(self):
+        return read_json_file('json_data\main_constructor.json')['Races']
+    
+    def get_recomended_races(self):
         return read_json_file('json_data\main_constructor.json')['Races']
     
     def set_race(self, char_race: str):
@@ -168,4 +172,9 @@ class CharConstructor:
 
     def get_result(self):
         return "Персонаж:\n - гемор\n - мутор"
-
+    
+    def set_saving_throws(self):
+        #saving_throws
+        saving_throws = self.supabase.get_class_data_by_name(self.player_list['character_class'])["class"]["saving_throws"]
+        for i in saving_throws:
+            self.player_list["ability_saving_throws"][i] = self.player_list["stat_modifiers"][i] + self.player_list['ownership_bonus']
