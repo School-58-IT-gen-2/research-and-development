@@ -32,7 +32,7 @@ player_list_example = {
     "notes": "",
     "diary": "",
     "hp": 0,
-    "level": 1,
+    "lvl": 1,
     "passive_perception": 1,
     "travel_speed": 1,
     "speed": 0,
@@ -93,6 +93,7 @@ class Create(BaseModel):
 
 @app.post("/create-character-list")
 async def register_user(create: Create):
+    #почему-то тут бага с уровнем
     return choose(create.gender.value, create.race.value, create.character_class.value)
 
 
@@ -102,43 +103,43 @@ def choose(gender: str, race: str, character_class: str):
     supabase = DBSource(os.getenv("SUPABASE_URL"),os.getenv("SUPABASE_KEY"))
     supabase.connect()
     player_list = {
-    "race": "",
-    "character_class": "",
-    "initiative": 1,
-    "experience": 0,
-    "ownership_bonus": 2,
-    "ability_saving_throws": {},
-    "death_saving_throws": 0,
-    "inspiration": False,
-    "skills":[],
-    "interference": False,
-    "advantages": False,
-    "traits_and_abilities":{},
-    "weaknesses":{},
-    "valuables":{},
-    "name": "",
-    "stat_modifiers":{"strength":0,"dexterity":0,"constitution":0,"intelligence":0,"wisdom":0,"charisma":0},
-    "stats":{"strength":10,"dexterity":10,"constitution":10,"intelligence":10,"wisdom":10,"charisma":10},
-    "backstory": "",
-    "notes": "",
-    "diary": "",
-    "hp": 0,
-    "level": 1,
-    "passive_perception": 1,
-    "travel_speed": 1,
-    "speed": 0,
-    "weapons_and_equipment":{},
-    "spells":{},
-    "languages":[],
-    "special_features":{},
-    "npc_relations":{},
-    "user_id":0,
-    "surname": "",
-    "inventory": [],
-    "age": 1,
-    "attack_and_damage_values":{},
-    "worldview": ""
-}
+        "race": "",
+        "character_class": "",
+        "initiative": 1,
+        "experience": 0,
+        "ownership_bonus": 2,
+        "ability_saving_throws": {},
+        "death_saving_throws": 0,
+        "inspiration": False,
+        "skills":[],
+        "interference": False,
+        "advantages": False,
+        "traits_and_abilities":{},
+        "weaknesses":{},
+        "valuables":{},
+        "name": "",
+        "stat_modifiers":{"strength":0,"dexterity":0,"constitution":0,"intelligence":0,"wisdom":0,"charisma":0},
+        "stats":{"strength":10,"dexterity":10,"constitution":10,"intelligence":10,"wisdom":10,"charisma":10},
+        "backstory": "",
+        "notes": "",
+        "diary": "",
+        "hp": 0,
+        "lvl": 1,
+        "passive_perception": 1,
+        "travel_speed": 1,
+        "speed": 0,
+        "weapons_and_equipment":{},
+        "spells":{},
+        "languages":[],
+        "special_features":{},
+        "npc_relations":{},
+        "user_id":0,
+        "surname": "",
+        "inventory": [],
+        "age": 1,
+        "attack_and_damage_values":{},
+        "worldview": ""
+    }
     race = races[race]
     race_file = supabase.get_race_data_by_name(race)
     subrace = race_file["race"]['subraces']
@@ -147,11 +148,11 @@ def choose(gender: str, race: str, character_class: str):
         subrace = subrace[0]
         player_list["race"] = subrace['name']
     else:
-         player_list["race"] = race_file["race"]['name']
+        player_list["race"] = race_file["race"]['name']
     if gender == 'M':
-         names = race_file["race"]["man_names"]
+        names = race_file["race"]["man_names"]
     else:
-         names = race_file["race"]["woman_names"]
+        names = race_file["race"]["woman_names"]
     random.shuffle(names)
     player_list["name"] = names[0]
 
@@ -182,15 +183,15 @@ def choose(gender: str, race: str, character_class: str):
     random.shuffle(values)
     a = 0 
     for i in stats.keys():
-         if i not in primary_ability:
-              stats[i] = values[a]
-              a+=1
+        if i not in primary_ability:
+            stats[i] = values[a]
+            a+=1
     for i in primary_ability:
-         stats[i] = max_values[0]
-         max_values.pop(0) 
+        stats[i] = max_values[0]
+        max_values.pop(0) 
     ability_bonuses = race_file["race"]["ability_bonuses"]
     for i in ability_bonuses.keys():
-         stats[i] += ability_bonuses[i]
+        stats[i] += ability_bonuses[i]
     if subrace != []:
         ability_bonuses = subrace["ability_bonuses"]
         for i in ability_bonuses.keys():
@@ -207,7 +208,7 @@ def choose(gender: str, race: str, character_class: str):
     #saving_throws
     saving_throws = class_file["class"]["saving_throws"]
     for i in saving_throws:
-         player_list["ability_saving_throws"][i] = player_list["stat_modifiers"][i]
+        player_list["ability_saving_throws"][i] = player_list["stat_modifiers"][i]
 
     #умения
     traits = race_file["race"]["traits"]
@@ -242,7 +243,7 @@ def choose(gender: str, race: str, character_class: str):
     #пасивная мудрость
     passive_perception = 10 + player_list["stat_modifiers"]["wisdom"]
     if  'восприятие' in player_list['skills']:
-         passive_perception += player_list['ownership_bonus']
+        passive_perception += player_list['ownership_bonus']
     player_list["passive_perception"] = passive_perception
 
     #languages
@@ -263,14 +264,14 @@ def choose(gender: str, race: str, character_class: str):
 
 
     if race in spells_file["races"].keys():
-         player_list["spells"] = spells_file["races"][race]
+        player_list["spells"] = spells_file["races"][race]
          
     if subrace != []:
         if subrace["name"] in spells_file["races"].keys():
             player_list["spells"] = spells_file["races"][subrace["name"]]
 
     if character_class in spells_file["classes"].keys():
-         player_list["spells"] = spells_file["classes"][character_class]
+        player_list["spells"] = spells_file["classes"][character_class]
     #inventory
     armor = race_file["starting_equipment"]["armor"]
     random.shuffle(armor)
@@ -301,4 +302,5 @@ def choose(gender: str, race: str, character_class: str):
     #backstory
     lore_file = supabase.get_lore_data()
     player_list["backstory"] = lore_file["races"][race][random.randint(0,len(lore_file["races"][race])-1)]
+    
     return player_list
