@@ -54,11 +54,14 @@ def constructor_start(update: Update, context: CallbackContext) -> int:
 
 
     query = update.callback_query
-    if query.data == 'random':
-        query.edit_message_text("*Тут выводится случайный персонаж", reply_markup=InlineKeyboardMarkup([]))
-        return ConversationHandler.END
     global constructor
     constructor = CharConstructor()
+    if query.data == 'random':
+
+        result = constructor.generate_random_char()
+
+        query.edit_message_text(f"*Тут выводится случайный персонаж {str(result)}", reply_markup=InlineKeyboardMarkup([]))
+        return ConversationHandler.END
     query.answer()
     classes = constructor.get_classes()
     keyboard = [[InlineKeyboardButton(race, callback_data=race)] for race in classes] + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
