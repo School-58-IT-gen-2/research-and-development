@@ -61,11 +61,14 @@ class CharConstructor:
         self.__characteristic_limit = 27
         self.__race_data = dict()
         self.__class_data = dict()
+        self.__last_characteristic_variants = []
 
     def get_classes(self):
         return read_json_file('json_data\main_constructor.json')['Classes']
     
     def set_class(self, char_class: str):
+        if char_class == 'random':
+            char_class = random.choice(list(classes.keys()))
         self.player_list['character_class'] = char_class
         print(f'Выбран класс: {char_class}')
         
@@ -78,9 +81,11 @@ class CharConstructor:
         return read_json_file('json_data\main_constructor.json')['Races']
     
     def set_race(self, char_race: str):
-        print(f'Выбрана раса: {char_race}')
+        if char_race == 'random':
+            char_race = random.choice(list(races.keys()))
         self.player_list['race'] = char_race
         
+        print(f'Выбрана раса: {char_race}')
         self.__race_data = self.supabase.get_race_data_by_name(races[self.player_list['race']])
         
     def get_characteristics(self):
@@ -98,10 +103,12 @@ class CharConstructor:
         
         recomended_btns = list(filter(lambda x: (9 if int(x) == 15 else int(x) - 8) <= self.__characteristic_limit, recomended_btns))
         recomended_to_class = list(map(str, list(range(recomended_min, recomended_max + 1))))
-        
+        self.__last_characteristic_variants = recomended_btns
         return characteristics_translate[target_characteristic], recomended_btns, recomended_to_class
     
     def set_characteristics(self, characteristics):
+        if characteristics == 'random':
+            characteristics = random.choice(self.__last_characteristic_variants)
         target_characteristic = next((k for k, v in self.player_list['stats'].items() if v is None), None)
         self.__characteristic_limit -= 9 if int(characteristics) == 15 else int(characteristics) - 8
         exec(f"self.player_list['stats']['{target_characteristic}'] = {int(characteristics)}")
