@@ -50,7 +50,8 @@ class CharConstructor:
             "inventory": [],
             "age": 1,
             "attack_and_damage_values":{},
-            "worldview": ""
+            "worldview": "",
+            "gender": ""
         }
         self.skills_counter = 0
         self.inventory_counter = 0
@@ -177,9 +178,25 @@ class CharConstructor:
         
         
     def set_gender(self, gender):
+        if gender == 'male':
+            gender = 'Мужской'
+        elif gender == 'female':
+            gender = 'Женский'
+        else:
+            gender = random.choice(['Мужской', 'Женский'])
+        self.player_list['gender'] = gender
         print(f'Выбран гендер: {gender}')
 
     def set_name(self, name):
+        if name == 'random':
+            if self.player_list['gender'] == 'Мужской':
+                names = self.supabase.get_race_data_by_name(races[self.player_list['race']])['race']['man_names']
+            else:
+                names = self.supabase.get_race_data_by_name(races[self.player_list['race']])['race']['woman_names']
+
+            print(names)
+            name = random.choice(names)
+        self.player_list['name'] = name
         print(f'Выбрано имя: {name}')
 
     def set_story(self, story):
@@ -189,10 +206,13 @@ class CharConstructor:
 
 
     def set_age(self, age):
+        if age == 'random':
+            range = self.supabase.get_race_data_by_name(races[self.player_list['race']])['race']['age']
+            age = random.randint(range['min'], range['max'])
+
+        self.player_list['age'] = age
         print(f'Выбран возраст: {age}')
 
-    def get_result(self):
-        return "Персонаж:\n - гемор\n - мутор"
     
     def set_saving_throws(self):
         #saving_throws
