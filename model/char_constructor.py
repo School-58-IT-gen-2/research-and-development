@@ -10,7 +10,7 @@ def read_json_file(file_path):
     return data
 
 classes = {'Следопыт':'pathfinder',"Варвар":"barbarian","Бард":"bard","Плут":"dodger","Друид":"druid","Колдун":"magician","Монах":"monk","Паладин":"paladin","Жрец":"priest","Маг":"warlock","Воин":"warrior","Волшебник":"wizzard"}
-races = {"Дварф":'dwarf',"Эльф":'elves','Полурослик':"halfling",'Человек':"human",'Драконорожденный':"dragonborn",'Гном':"gnom",'Полуэльф':"halfelf",'Полуорк':"halforc",'Тифлинг':"tiefling",'Орк':"ork"}
+races = {"Дварф":'dwarf',"Эльф":'elves','Полурослик':"halfling",'Человек':"human",'Драконорожденный':"dragonborn",'Гном':"gnom",'Полуэльф':"halfelf",'Полуорк':"halforc",'Тифлинг':"tiefling"}
 
 class CharConstructor:
     def __init__(self):
@@ -117,10 +117,8 @@ class CharConstructor:
     def add_skill(self, skill):
         if skill == 'random':
             skills_list = read_json_file('json_data\class_constructor.json')["Classes"][self.player_list["character_class"]]["Навыки"]["Список"]
-            print(skills_list)
-            print(self.player_list['skills'])
             for skill in self.player_list["skills"]:
-                print(skill)
+                
                 skills_list.remove(skill)
             
             self.player_list['skills'].append(random.choice(skills_list))

@@ -5,6 +5,7 @@ from db.db_source import DBSource
 from config import SUPABASE_URL, SUPABASE_KEY
 from model.char_constructor import CharConstructor
 import requests
+import random
 
 CONSTRUCTOR_START, CHOOSING_CLASS, CHOOSING_RACE, CHOOSING_CHARACTERISTICS, CHOOSING_SKILLS, CHOOSING_INVENTORY, CHOOSING_GENDER, CHOOSING_AGE, CHOOSING_STORY, CHOOSING_NAME = range(10)
 URL = "https://rnd.questhub.pro/create-character-list"
@@ -137,7 +138,6 @@ def choosing_skills(update: Update, context: CallbackContext) -> int:
     if lim == 'more':
         skills_body = constructor.get_skills()
         skills = skills_body["skills_list"]
-
         keyboard = [[InlineKeyboardButton(skill, callback_data=skill)] for skill in skills] + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
 
 
@@ -163,8 +163,9 @@ def choosing_skills(update: Update, context: CallbackContext) -> int:
     fixed_strs = [option if len(option) < 32 else ' + '.join(j if len(j) < 10 else j[:10] for j in option.split(' + ')) for option in inventory_strs]
     
     long_callback = dict(zip(list(range(len(inventory_strs))), inventory_strs))
+    random_item_index = random.randint(0, len(inventory_strs)-1)
     btns = [[InlineKeyboardButton(option, callback_data=inventory_strs.index(option))] for option in inventory_strs]
-    keyboard = btns + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
+    keyboard = btns + [[InlineKeyboardButton('Выбрать случайную', callback_data=random_item_index)]]
 
     reply_markup = InlineKeyboardMarkup(keyboard)
     query.edit_message_text(f"Выберите опцию для инвентаря вашего персонажа [{constructor.inventory_counter + 1}/{constructor.inventory_lim}]:", reply_markup=reply_markup)
@@ -199,8 +200,10 @@ def choosing_inventory(update: Update, context: CallbackContext) -> int:
         fixed_strs = [option if len(option) < 32 else ' + '.join(j if len(j) < 10 else j[:10] for j in option.split(' + ')) for option in inventory_strs]
         
         long_callback = dict(zip(list(range(len(inventory_strs))), inventory_strs))
+        print(inventory_strs)
+        random_item_index = random.randint(0, len(inventory_strs)-1)
         btns = [[InlineKeyboardButton(option, callback_data=inventory_strs.index(option))] for option in inventory_strs]
-        keyboard = btns + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
+        keyboard = btns + [[InlineKeyboardButton('Выбрать случайную', callback_data=random_item_index)]]
 
         reply_markup = InlineKeyboardMarkup(keyboard)
         query.edit_message_text(f"Выберите опцию для инвентаря вашего персонажа [{constructor.inventory_counter + 1}/{constructor.inventory_lim}]:", reply_markup=reply_markup)
