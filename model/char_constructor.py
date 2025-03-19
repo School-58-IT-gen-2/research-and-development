@@ -55,9 +55,11 @@ class CharConstructor:
         self.skills_counter = 0
         self.inventory_counter = 0
         self.inventory_lim = 0
-        self.__characteristic_limit = 27
         self.supabase = DBSource(os.getenv("SUPABASE_URL"),os.getenv("SUPABASE_KEY"))
         self.supabase.connect()
+        self.__characteristic_limit = 27
+        self.__race_data = dict()
+        self.__class_data = dict()
 
     def get_classes(self):
         return read_json_file('json_data\main_constructor.json')['Classes']
@@ -65,7 +67,8 @@ class CharConstructor:
     def set_class(self, char_class: str):
         self.player_list['character_class'] = char_class
         print(f'Выбран класс: {char_class}')
-        self.set_saving_throws()
+        
+        self.__class_data = self.supabase.get_class_data_by_name(classes[self.player_list['character_class']])
 
     def get_races(self):
         return read_json_file('json_data\main_constructor.json')['Races']
@@ -74,8 +77,10 @@ class CharConstructor:
         return read_json_file('json_data\main_constructor.json')['Races']
     
     def set_race(self, char_race: str):
-        self.player_list['race'] = char_race
         print(f'Выбрана раса: {char_race}')
+        self.player_list['race'] = char_race
+        
+        self.__race_data = self.supabase.get_race_data_by_name(races[self.player_list['race']])
         
     def get_characteristics(self):
         characteristics_translate = {'strength': 'Сила', "dexterity": "Ловкость",
@@ -153,13 +158,29 @@ class CharConstructor:
                 
         self.inventory_counter += 1
         
+    def set_default_values(self):
+        '''Финальная установка значений не требующих выбора'''
+        
+        #от статов
+        self.set_modifiers()
+        
+        #от класса
+        self.set_saving_throws()
+        self.set_hits()
+        self.set_passive_persception()
+        
+        #от расы
+        self.set_speed()
+        self.set_languages()
+        self.set_worldview()
+        self.set_backstory()
+        
+        
     def set_gender(self, gender):
         print(f'Выбран гендер: {gender}')
 
-
     def set_name(self, name):
         print(f'Выбрано имя: {name}')
-
 
     def set_story(self, story):
         if story == 'random':
@@ -175,8 +196,42 @@ class CharConstructor:
     
     def set_saving_throws(self):
         #saving_throws
-        print(111111111111111, self.player_list['character_class'], classes[self.player_list['character_class']])
-        print(self.supabase.get_class_data_by_name(classes[self.player_list['character_class']]))
-        saving_throws = self.supabase.get_class_data_by_name(classes[self.player_list['character_class']])["saving_throws"]
+        saving_throws = self.__class_data['class']["saving_throws"]
         for i in saving_throws:
             self.player_list["ability_saving_throws"][i] = self.player_list["stat_modifiers"][i] + self.player_list['ownership_bonus']
+
+    def set_hits(self):
+        hit_dice = self.__class_data["class"]["hit_dice"].split('d')
+        health_points = int(hit_dice[1]) + int(self.player_list["stat_modifiers"]["constitution"])
+        self.player_list["hp"] = health_points
+        
+    def set_passive_persception(self):
+        passive_perception = 10 + self.player_list["stat_modifiers"]["wisdom"]
+        if 'восприятие' in self.player_list['skills']:
+            passive_perception += self.player_list['ownership_bonus']
+        self.player_list["passive_perception"] = passive_perception
+        
+    def set_speed(self):
+        self.player_list['speed'] = self.__race_data['race']["speed"]["walk"]
+        
+    def set_languages(self):
+        self.player_list["languages"]  = self.__race_data["race"]["languages"] 
+        
+    def set_modifiers(self):
+        stats_modifiers = self.player_list["stat_modifiers"]
+        stats = self.player_list["stats"]
+        for i in stats.keys():
+            stats_modifiers[i] = (stats[i] - 10)//2
+        self.player_list["stat_modifiers"] = stats_modifiers
+        
+    def set_worldview(self):
+        keys = []
+        for j in self.__race_data["race"]["worldview"].keys():
+            keys.append(j)
+        random.shuffle(keys)
+        self.player_list["worldview"] = self.__race_data["race"]["worldview"][keys[0]]
+        
+    def set_backstory(self):
+        race = races[self.player_list['race']]
+        lore_file = self.supabase.get_lore_data()
+        self.player_list["backstory"] = lore_file["races"][race][random.randint(0,len(lore_file["races"][race])-1)]

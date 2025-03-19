@@ -281,6 +281,7 @@ def choosing_name(update: Update, context: CallbackContext) -> None:
     formatted_response = escape_markdown_v2(formatted_response)  # Экранируем текст
     update.message.reply_text(formatted_response, parse_mode='MarkdownV2', reply_markup=ReplyKeyboardRemove())
 
+    constructor.set_default_values() #Финальное заполнение листа
     return ConversationHandler.END
 
 
