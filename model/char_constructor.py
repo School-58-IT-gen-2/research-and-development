@@ -9,7 +9,7 @@ def read_json_file(file_path):
         data = json.load(file)
     return data
 
-clases = {'Следопыт':'pathfinder',"Варвар":"barbarian","Бард":"bard","Плут":"dodger","Друид":"druid","Колдун":"magician","Монах":"monk","Паладин":"paladin","Жрец":"priest","Маг":"warlock","Воин":"warrior","Волшебник":"wizzard"}
+classes = {'Следопыт':'pathfinder',"Варвар":"barbarian","Бард":"bard","Плут":"dodger","Друид":"druid","Колдун":"magician","Монах":"monk","Паладин":"paladin","Жрец":"priest","Маг":"warlock","Воин":"warrior","Волшебник":"wizzard"}
 races = {"Дварф":'dwarf',"Эльф":'elves','Полурослик':"halfling",'Человек':"human",'Драконорожденный':"dragonborn",'Гном':"gnom",'Полуэльф':"halfelf",'Полуорк':"halforc",'Тифлинг':"tiefling",'Орк':"ork"}
 
 class CharConstructor:
@@ -175,6 +175,8 @@ class CharConstructor:
     
     def set_saving_throws(self):
         #saving_throws
-        saving_throws = self.supabase.get_class_data_by_name(self.player_list['character_class'])["class"]["saving_throws"]
+        print(111111111111111, self.player_list['character_class'], classes[self.player_list['character_class']])
+        print(self.supabase.get_class_data_by_name(classes[self.player_list['character_class']]))
+        saving_throws = self.supabase.get_class_data_by_name(classes[self.player_list['character_class']])["saving_throws"]
         for i in saving_throws:
             self.player_list["ability_saving_throws"][i] = self.player_list["stat_modifiers"][i] + self.player_list['ownership_bonus']
