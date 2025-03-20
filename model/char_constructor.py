@@ -16,6 +16,7 @@ class CharConstructor:
     def __init__(self):
         self.player_list = {
             "race": "",
+            "subrace": "",
             "character_class": "",
             "initiative": 1,
             "experience": 0,
@@ -61,6 +62,7 @@ class CharConstructor:
         self.supabase.connect()
         self.__characteristic_limit = 27
         self.__race_data = dict()
+        self.__subrace_data = dict()
         self.__class_data = dict()
         self.__last_characteristic_variants = []
 
@@ -78,6 +80,9 @@ class CharConstructor:
     def get_races(self):
         return read_json_file('json_data\main_constructor.json')['Races']
     
+    def get_subraces(self):
+        return self.__race_data["race"]['subraces']
+    
     def get_recomended_races(self):
         return read_json_file('json_data\main_constructor.json')['Races']
     
@@ -88,6 +93,16 @@ class CharConstructor:
         
         print(f'Выбрана раса: {char_race}')
         self.__race_data = self.supabase.get_race_data_by_name(races[self.player_list['race']])
+        self.set_subrace('random') #!!!!!!!!!!!!!!!!!!!!!!!! УДАЛИТЬ ПОСЛЕ ДОБАВЛЕНИЯ ВОПРОСА В АЙОГРАММ (пока стоит на рандоме)
+        
+    def set_subrace(self, subrace: str):
+        if subrace == 'random':
+            subrace = random.choice(self.get_subraces())
+        self.__subrace_data = subrace
+        self.player_list['subrace'] = subrace['name']
+        
+        print(f'Выбрана подраса: {subrace['name']}')
+        
         
     def get_characteristics(self):
         characteristics_translate = {'strength': 'Сила', "dexterity": "Ловкость",
@@ -152,11 +167,7 @@ class CharConstructor:
         #race_file = self.supabase.get_race_data_by_name(self.race)
         weapon_file = self.supabase.get_weapon_data()
         for i in item.split(' + '):
-            # for j in self.player_list["weapons_and_equipment"]:
-            #     if j not in weapon_file["armor"]:
-            #         self.player_list["attack_and_damage_values"][i] = weapon_file["weapons"][i]
             
-            print(i)
             if i in weapon_file["weapons"].keys():
                 self.player_list["weapons_and_equipment"][i] = weapon_file["weapons"][i]
                 print('weapon!')
@@ -166,6 +177,9 @@ class CharConstructor:
                 self.player_list['inventory'].append(i)
                 
         self.inventory_counter += 1
+        for j in self.player_list["weapons_and_equipment"]:
+            if j not in weapon_file["armor"]:
+                self.player_list["attack_and_damage_values"][j] = weapon_file["weapons"][j]
         
     def set_default_values(self):
         '''Финальная установка значений не требующих выбора'''
@@ -304,3 +318,7 @@ class CharConstructor:
 
         
         return self.player_list
+
+    def set_race_characteristics_bonuces(self):
+        # all_bonuces = self.__race_data['race']['ability_bonuses'] +  
+        pass
