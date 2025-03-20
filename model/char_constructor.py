@@ -286,3 +286,21 @@ class CharConstructor:
         for i in range(1, self.player_list['level']):
             traits += self.__class_data["class"]["features_by_level"][str(i)]
         self.player_list["class_features"] = traits
+        
+    def generate_random_char(self):
+        self.set_class('random')
+        self.set_race('random')
+        while 1:
+            _, __, ___ = self.get_characteristics()
+            if _ == None:
+                break
+            self.set_characteristics('random')
+
+
+        skills_limit = self.get_skills()['skills_limit']
+
+        for i in range(skills_limit):
+            self.add_skill('random')
+
+        
+        return self.player_list
