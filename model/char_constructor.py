@@ -170,7 +170,6 @@ class CharConstructor:
             
             if i in weapon_file["weapons"].keys():
                 self.player_list["weapons_and_equipment"][i] = weapon_file["weapons"][i]
-                print('weapon!')
             elif i in weapon_file['armor'].keys():
                 self.player_list["weapons_and_equipment"][i] = weapon_file['armor'][i]
             else:
@@ -184,9 +183,6 @@ class CharConstructor:
     def set_default_values(self):
         '''Финальная установка значений не требующих выбора'''
         
-        #от статов
-        self.set_modifiers()
-        
         #от класса
         self.set_saving_throws()
         self.set_hits()
@@ -199,6 +195,11 @@ class CharConstructor:
         self.set_worldview()
         self.set_backstory()
         self.set_race_traits()
+        self.set_race_characteristics_bonuces()
+        
+        #от статов
+        self.set_modifiers()
+        
         
         
     def set_gender(self, gender):
@@ -218,7 +219,6 @@ class CharConstructor:
             else:
                 names = self.supabase.get_race_data_by_name(races[self.player_list['race']])['race']['woman_names']
 
-            print(names)
             name = random.choice(names)
         self.player_list['name'] = name
         print(f'Выбрано имя: {name}')
@@ -320,5 +320,10 @@ class CharConstructor:
         return self.player_list
 
     def set_race_characteristics_bonuces(self):
-        # all_bonuces = self.__race_data['race']['ability_bonuses'] +  
-        pass
+        all_bonuces = dict()
+        for i in list(self.__race_data['race']['ability_bonuses'].keys()):
+            all_bonuces[i] = self.__race_data['race']['ability_bonuses'][i]
+        for i in list(self.__subrace_data['ability_bonuses']):
+            all_bonuces[i] = self.__subrace_data['ability_bonuses'][i]
+        for i in list(all_bonuces.keys()):
+            self.player_list['stats'][i] += all_bonuces[i]

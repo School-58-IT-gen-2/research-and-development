@@ -73,7 +73,6 @@ def format_weapons_and_armor(data):
     if "weapons_and_equipment" in data:
         weapons_and_equipment = data["weapons_and_equipment"]
         card += f"*🛡️ Амуниция:*\n"
-        print(2222222222222222, weapons_and_equipment)
         for name, details in weapons_and_equipment.items():
             card += f"  - *{name}:*\n"
             for key, value in details.items():
