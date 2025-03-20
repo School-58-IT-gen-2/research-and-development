@@ -118,9 +118,9 @@ class CharConstructor:
     def add_skill(self, skill):
         if skill == 'random':
             skills_list = read_json_file('json_data\class_constructor.json')["Classes"][self.player_list["character_class"]]["Навыки"]["Список"]
-            for skill in self.player_list["skills"]:
+            for s in self.player_list["skills"]:
                 
-                skills_list.remove(skill)
+                skills_list.remove(s)
             
             self.player_list['skills'].append(random.choice(skills_list))
         else:
