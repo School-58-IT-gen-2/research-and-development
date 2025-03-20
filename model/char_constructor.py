@@ -27,6 +27,7 @@ class CharConstructor:
             "interference": False,
             "advantages": False,
             "traits_and_abilities":{},
+            "class_features": {},
             "weaknesses":{},
             "valuables":{},
             "name": "",
@@ -149,18 +150,20 @@ class CharConstructor:
     
     def add_inventory(self, item: str):
         #race_file = self.supabase.get_race_data_by_name(self.race)
+        weapon_file = self.supabase.get_weapon_data()
         for i in item.split(' + '):
-            weapon_file = self.supabase.get_weapon_data()
-            for i in self.player_list["weapons_and_equipment"]:
-                if i not in weapon_file["armor"]:
-                    self.player_list["attack_and_damage_values"][i] = weapon_file["weapons"][i]
+            # for j in self.player_list["weapons_and_equipment"]:
+            #     if j not in weapon_file["armor"]:
+            #         self.player_list["attack_and_damage_values"][i] = weapon_file["weapons"][i]
             
+            print(i)
             if i in weapon_file["weapons"].keys():
                 self.player_list["weapons_and_equipment"][i] = weapon_file["weapons"][i]
+                print('weapon!')
             elif i in weapon_file['armor'].keys():
                 self.player_list["weapons_and_equipment"][i] = weapon_file['armor'][i]
             else:
-                self.player_list['inventory']
+                self.player_list['inventory'].append(i)
                 
         self.inventory_counter += 1
         
@@ -174,12 +177,14 @@ class CharConstructor:
         self.set_saving_throws()
         self.set_hits()
         self.set_passive_persception()
+        self.set_class_features()
         
         #от расы
         self.set_speed()
         self.set_languages()
         self.set_worldview()
         self.set_backstory()
+        self.set_race_traits()
         
         
     def set_gender(self, gender):
@@ -260,3 +265,24 @@ class CharConstructor:
         race = races[self.player_list['race']]
         lore_file = self.supabase.get_lore_data()
         self.player_list["backstory"] = lore_file["races"][race][random.randint(0,len(lore_file["races"][race])-1)]
+        
+    def set_race_traits(self):
+        subraces = self.__race_data["race"]['subraces']
+        subrace = random.choice(subraces) if subraces != [] else []
+        traits = self.__race_data["race"]["traits"]
+        if subrace != []:
+            subrace_traits = subrace["traits"]
+            for j in subrace_traits:
+                traits.append(j)      
+
+        for i in traits:
+            keys = []
+            for j in i.keys():
+                keys.append(j)
+            self.player_list["traits_and_abilities"][i[keys[0]]] = i[keys[1]]
+            
+    def set_class_features(self):
+        traits = []
+        for i in range(1, self.player_list['level']):
+            traits += self.__class_data["class"]["features_by_level"][str(i)]
+        self.player_list["class_features"] = traits

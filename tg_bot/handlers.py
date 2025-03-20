@@ -178,7 +178,9 @@ def choosing_inventory(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     query.answer()
     
+    print(long_callback)
     item = long_callback[int(query.data)]
+    print('->', item)
     
     constructor.add_inventory(item)
 
@@ -199,6 +201,7 @@ def choosing_inventory(update: Update, context: CallbackContext) -> int:
 
         fixed_strs = [option if len(option) < 32 else ' + '.join(j if len(j) < 10 else j[:10] for j in option.split(' + ')) for option in inventory_strs]
         
+        print(9999999999, long_callback, dict(zip(list(range(len(inventory_strs))), inventory_strs)))
         long_callback = dict(zip(list(range(len(inventory_strs))), inventory_strs))
         print(inventory_strs)
         random_item_index = random.randint(0, len(inventory_strs)-1)
