@@ -9,7 +9,7 @@ def read_json_file(file_path):
         data = json.load(file)
     return data
 
-classes = {'Следопыт':'pathfinder',"Варвар":"barbarian","Бард":"bard","Плут":"dodger","Друид":"druid","Колдун":"magician","Монах":"monk","Паладин":"paladin","Жрец":"priest","Маг":"warlock","Воин":"warrior","Волшебник":"wizzard"}
+classes = {'Следопыт':'pathfinder',"Варвар":"barbarian","Бард":"bard","Плут":"dodger","Друид":"druid","Колдун":"magician","Монах":"monk","Паладин":"paladin","Жрец":"priest","Чародей":"warlock","Воин":"warrior","Волшебник":"wizzard"}
 races = {"Дварф":'dwarf',"Эльф":'elves','Полурослик':"halfling",'Человек':"human",'Драконорожденный':"dragonborn",'Гном':"gnom",'Полуэльф':"halfelf",'Полуорк':"halforc",'Тифлинг':"tiefling"}
 
 class CharConstructor:
@@ -96,12 +96,13 @@ class CharConstructor:
         self.set_subrace('random') #!!!!!!!!!!!!!!!!!!!!!!!! УДАЛИТЬ ПОСЛЕ ДОБАВЛЕНИЯ ВОПРОСА В АЙОГРАММ (пока стоит на рандоме)
         
     def set_subrace(self, subrace: str):
-        if subrace == 'random':
-            subrace = random.choice(self.get_subraces())
-        self.__subrace_data = subrace
-        self.player_list['subrace'] = subrace['name']
-        
-        print(f'Выбрана подраса: {subrace['name']}')
+        if self.get_subraces() != []:
+            if subrace == 'random':
+                subrace = random.choice(self.get_subraces())
+            self.__subrace_data = subrace
+            self.player_list['subrace'] = subrace['name']
+            
+            print(f'Выбрана подраса: {subrace['name']}')
         
         
     def get_characteristics(self):
@@ -167,13 +168,20 @@ class CharConstructor:
         #race_file = self.supabase.get_race_data_by_name(self.race)
         weapon_file = self.supabase.get_weapon_data()
         for i in item.split(' + '):
+            item_count = 1
+            
+            if '(' in i: 
+                item_count = int(i[i.find('(') + 1:-1])
+                i = i[:i.find('(')]
             
             if i in weapon_file["weapons"].keys():
                 self.player_list["weapons_and_equipment"][i] = weapon_file["weapons"][i]
+                if item_count > 1:
+                    self.player_list["weapons_and_equipment"][i]['Кол-во'] = item_count
             elif i in weapon_file['armor'].keys():
                 self.player_list["weapons_and_equipment"][i] = weapon_file['armor'][i]
             else:
-                self.player_list['inventory'].append(i)
+                self.player_list['inventory'].append(f'{i}({item_count})' if item_count > 1 else i)
                 
         self.inventory_counter += 1
         for j in self.player_list["weapons_and_equipment"]:
@@ -323,7 +331,8 @@ class CharConstructor:
         all_bonuces = dict()
         for i in list(self.__race_data['race']['ability_bonuses'].keys()):
             all_bonuces[i] = self.__race_data['race']['ability_bonuses'][i]
-        for i in list(self.__subrace_data['ability_bonuses']):
-            all_bonuces[i] = self.__subrace_data['ability_bonuses'][i]
+        if self.__subrace_data != dict():
+            for i in list(self.__subrace_data['ability_bonuses']):
+                all_bonuces[i] = self.__subrace_data['ability_bonuses'][i]
         for i in list(all_bonuces.keys()):
             self.player_list['stats'][i] += all_bonuces[i]
