@@ -102,7 +102,7 @@ class CharConstructor:
             self.__subrace_data = subrace
             self.player_list['subrace'] = subrace['name']
             
-            print(f'Выбрана подраса: {subrace['name']}')
+            print(f'Выбрана подраса: {subrace["name"]}')
         
         
     def get_characteristics(self):
@@ -193,7 +193,6 @@ class CharConstructor:
         
         #от класса
         self.set_saving_throws()
-        self.set_hits()
         self.set_passive_persception()
         self.set_class_features()
         
@@ -208,6 +207,8 @@ class CharConstructor:
         #от статов
         self.set_modifiers()
         
+        #от класса
+        self.set_hits()
         
         
     def set_gender(self, gender):
