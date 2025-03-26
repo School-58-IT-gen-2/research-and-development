@@ -324,7 +324,7 @@ class CharConstructor:
         for i in range(skills_limit):
             self.add_skill('random')
 
-        
+
         return self.player_list
 
     def set_race_characteristics_bonuces(self):
