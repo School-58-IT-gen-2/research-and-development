@@ -326,4 +326,4 @@ def choose(gender: str, race: str, character_class: str):
     return player_list
 
 
-print(choose("M", "Дварф", "Следопыт"))
+# print(choose("M", "Дварф", "Следопыт"))
