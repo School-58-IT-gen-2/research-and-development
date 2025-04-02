@@ -11,6 +11,7 @@ def read_json_file(file_path):
 
 classes = {'Следопыт':'pathfinder',"Варвар":"barbarian","Бард":"bard","Плут":"dodger","Друид":"druid","Колдун":"magician","Монах":"monk","Паладин":"paladin","Жрец":"priest","Чародей":"warlock","Воин":"warrior","Волшебник":"wizzard"}
 races = {"Дварф":'dwarf',"Эльф":'elves','Полурослик':"halfling",'Человек':"human",'Драконорожденный':"dragonborn",'Гном':"gnom",'Полуэльф':"halfelf",'Полуорк':"halforc",'Тифлинг':"tiefling"}
+WEAPON_GROUPS = ['Простое дальнобойное', 'Воинское дальнобойное', "Простое рукопашное", "Воинское рукопашное", "Воинское"]
 
 class CharConstructor:
     def __init__(self):
@@ -337,3 +338,6 @@ class CharConstructor:
                 all_bonuces[i] = self.__subrace_data['ability_bonuses'][i]
         for i in list(all_bonuces.keys()):
             self.player_list['stats'][i] += all_bonuces[i]
+            
+    def get_weapon_group(self, group: str):
+        return self.supabase.get_weapon_data['weapon_types'][group]
