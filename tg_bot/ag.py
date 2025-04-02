@@ -17,16 +17,16 @@ db = DBSource(SUPABASE_URL, SUPABASE_KEY)
 db.connect()
 
 class CharacterCreation(StatesGroup):
-    START = State()
-    CHOOSE_CLASS = State()
-    CHOOSE_RACE = State()
-    CHOOSE_CHARACTERISTICS = State()
-    CHOOSE_SKILLS = State()
-    CHOOSE_INVENTORY = State()
-    CHOOSE_GENDER = State()
-    CHOOSE_AGE = State()
-    CHOOSE_STORY = State()
-    CHOOSE_NAME = State()
+    CONSTRUCTOR_START = State()
+    CHOOSING_CLASS = State()
+    CHOOSING_RACE = State()
+    CHOOSING_CHARACTERISTICS = State()
+    CHOOSING_SKILLS = State()
+    CHOOSING_INVENTORY = State()
+    CHOOSING_GENDER = State()
+    CHOOSING_AGE = State()
+    CHOOSING_STORY = State()
+    CHOOSING_NAME = State()
 
 constructor = CharConstructor()
 long_callback = {}
@@ -40,7 +40,7 @@ async def start(message: types.Message, state: FSMContext):
         ]
     )
     await message.answer("Выберите действие:", reply_markup=keyboard)
-    await state.set_state(CharacterCreation.START)
+    await state.set_state(CharacterCreation.CONSTRUCTOR_START)
 
 @dp.callback_query(F.data == "random")
 @dp.callback_query(F.data == "constructor")
