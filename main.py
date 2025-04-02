@@ -1,5 +1,5 @@
 import uvicorn
-from tg_bot.bot import main
+# from tg_bot.bot import main
 
 if __name__ == "__main__":
     uvicorn.run(
@@ -8,4 +8,5 @@ if __name__ == "__main__":
         port=6000,
         reload=True,
     )
-main()
+# main()
+# потом раскоментите, когда будете запускать бота на постоянке
