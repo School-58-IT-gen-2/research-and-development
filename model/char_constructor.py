@@ -66,6 +66,15 @@ class CharConstructor:
         self.__subrace_data = dict()
         self.__class_data = dict()
         self.__last_characteristic_variants = []
+        
+    def initialize_char(self, char_class: str, char_race: str, char_subrace: str):
+        self.set_class(char_class)
+        self.set_race(char_race)
+        self.set_subrace(char_subrace if char_subrace != None else 'random')
+        
+        self.set_initialize_default_values()
+        
+        return self.player_list
 
     def get_classes(self):
         return read_json_file('json_data\main_constructor.json')['Classes']
@@ -94,7 +103,7 @@ class CharConstructor:
         
         print(f'Выбрана раса: {char_race}')
         self.__race_data = self.supabase.get_race_data_by_name(races[self.player_list['race']])
-        self.set_subrace('random') #!!!!!!!!!!!!!!!!!!!!!!!! УДАЛИТЬ ПОСЛЕ ДОБАВЛЕНИЯ ВОПРОСА В АЙОГРАММ (пока стоит на рандоме)
+        #self.set_subrace('random') #!!!!!!!!!!!!!!!!!!!!!!!! УДАЛИТЬ ПОСЛЕ ДОБАВЛЕНИЯ ВОПРОСА В АЙОГРАММ (пока стоит на рандоме)
         
     def set_subrace(self, subrace: str):
         if self.get_subraces() != []:
@@ -188,10 +197,8 @@ class CharConstructor:
         for j in self.player_list["weapons_and_equipment"]:
             if j not in weapon_file["armor"]:
                 self.player_list["attack_and_damage_values"][j] = weapon_file["weapons"][j]
-        
-    def set_default_values(self):
-        '''Финальная установка значений не требующих выбора'''
-        
+                
+    def set_initialize_default_values(self):
         #от класса
         self.set_saving_throws()
         self.set_passive_persception()
@@ -204,6 +211,9 @@ class CharConstructor:
         self.set_backstory()
         self.set_race_traits()
         self.set_race_characteristics_bonuces()
+        
+    def set_final_default_values(self):
+        '''Финальная установка значений не требующих выбора'''
         
         #от статов
         self.set_modifiers()

@@ -1,9 +1,17 @@
 from fastapi import FastAPI
 from rnd_fastapi_server.models import Create
 from rnd_fastapi_server.utils import choose
+from model.char_constructor import CharConstructor
 
 app = FastAPI()
 
+# @app.post("/create-character-list")
+# async def register_user(create: Create):
+#     return choose(create.gender.value, create.race.value, create.character_class.value)
+
 @app.post("/create-character-list")
-async def register_user(create: Create):
-    return choose(create.gender.value, create.race.value, create.character_class.value)
+async def create_char(create: Create):
+    new_char = CharConstructor()
+    return new_char.initialize_char(char_class=create.character_class,
+                             char_race=create.race,
+                             char_subrace=create.subrace)

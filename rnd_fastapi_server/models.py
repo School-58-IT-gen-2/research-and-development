@@ -1,7 +1,7 @@
 from enum import Enum
 from pydantic import BaseModel
 
-class RacesVariants(Enum):
+class RacesVariants(str, Enum):
     dwarf = "Дварф"
     elves = "Эльф"
     halfling = 'Полурослик'
@@ -12,7 +12,7 @@ class RacesVariants(Enum):
     halforc = 'Полуорк'
     tiefling = 'Тифлинг'
 
-class ClassVariants(Enum):
+class ClassVariants(str, Enum):
     pathfinder = 'Следопыт'
     barbarian = "Варвар"
     bard = "Бард"
@@ -22,15 +22,16 @@ class ClassVariants(Enum):
     monk = "Монах"
     paladin = "Паладин"
     priest = "Жрец"
-    warlock = "Маг"
+    warlock = "Чародей"
     warrior = "Воин"
     wizzard = "Волшебник"
 
-class GenderVariants(Enum):
+class GenderVariants(str, Enum):
     M = "M"
     F = "W"
 
 class Create(BaseModel):
-    gender: GenderVariants
-    race: RacesVariants
+    #gender: GenderVariants
     character_class: ClassVariants
+    race: RacesVariants
+    subrace: str = 'random'
