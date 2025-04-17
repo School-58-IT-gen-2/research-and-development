@@ -12,6 +12,9 @@ def read_json_file(file_path):
 classes = {'Следопыт':'pathfinder',"Варвар":"barbarian","Бард":"bard","Плут":"dodger","Друид":"druid","Колдун":"magician","Монах":"monk","Паладин":"paladin","Жрец":"priest","Чародей":"warlock","Воин":"warrior","Волшебник":"wizzard"}
 races = {"Дварф":'dwarf',"Эльф":'elves','Полурослик':"halfling",'Человек':"human",'Драконорожденный':"dragonborn",'Гном':"gnom",'Полуэльф':"halfelf",'Полуорк':"halforc",'Тифлинг':"tiefling"}
 WEAPON_GROUPS = ['Простое дальнобойное', 'Воинское дальнобойное', "Простое рукопашное", "Воинское рукопашное", "Воинское"]
+CHARACTERISTICS_TRANSLATE = {'strength': 'Сила', "dexterity": "Ловкость",
+                                     "constitution": "Телосложение", "intelligence": "Интеллект",
+                                     "wisdom": "Мудрость", "charisma": "Харизма"}
 
 class CharConstructor:
     def __init__(self):
@@ -68,6 +71,11 @@ class CharConstructor:
         self.__last_characteristic_variants = []
         
     def initialize_char(self, char_class: str, char_race: str, char_subrace: str):
+        '''
+        Инициализация персонада по 3 параметрам
+        Request: класс, раса, подраса
+        Response: лист со значениями по умолчанию
+        '''
         self.set_class(char_class)
         self.set_race(char_race)
         self.set_subrace(char_subrace if char_subrace != None else 'random')
@@ -75,6 +83,20 @@ class CharConstructor:
         self.set_initialize_default_values()
         
         return self.player_list
+    
+    def get_options(self):
+        characteristics_dict = dict()
+        for stat in list(CHARACTERISTICS_TRANSLATE.values()):
+            data = self.get_characteristics()
+            characteristics_dict[stat] = [data[1], data[2]]
+        return {
+            'options': characteristics_dict,
+            'skils': self.get_skills(),
+            'inventory': self.get_inventory(),
+            'default_age': self.get_default_age(),
+            'default_story': self.get_default_stories()
+        }
+        
 
     def get_classes(self):
         return read_json_file('json_data\main_constructor.json')['Classes']
@@ -116,14 +138,12 @@ class CharConstructor:
         
         
     def get_characteristics(self):
-        characteristics_translate = {'strength': 'Сила', "dexterity": "Ловкость",
-                                     "constitution": "Телосложение", "intelligence": "Интеллект",
-                                     "wisdom": "Мудрость", "charisma": "Харизма"}
+        global CHARACTERISTICS_TRANSLATE
         target_characteristic = next((k for k, v in self.player_list['stats'].items() if v is None), None)
         
         if target_characteristic == None: return None, None, None
         
-        recomended_str = read_json_file('json_data\class_constructor.json')["Classes"][self.player_list["character_class"]]["Рекомендуемые характеристики"][characteristics_translate[target_characteristic]]
+        recomended_str = read_json_file('json_data\class_constructor.json')["Classes"][self.player_list["character_class"]]["Рекомендуемые характеристики"][CHARACTERISTICS_TRANSLATE[target_characteristic]]
         
         recomended_min, recomended_max = list(map(int, recomended_str.split('-')))
         recomended_btns = list(map(str, range(8, min(16, recomended_max + 3))))
@@ -131,7 +151,7 @@ class CharConstructor:
         recomended_btns = list(filter(lambda x: (9 if int(x) == 15 else int(x) - 8) <= self.__characteristic_limit, recomended_btns))
         recomended_to_class = list(map(str, list(range(recomended_min, recomended_max + 1))))
         self.__last_characteristic_variants = recomended_btns
-        return characteristics_translate[target_characteristic], recomended_btns, recomended_to_class
+        return CHARACTERISTICS_TRANSLATE[target_characteristic], recomended_btns, recomended_to_class
     
     def set_characteristics(self, characteristics):
         if characteristics == 'random':
@@ -210,7 +230,6 @@ class CharConstructor:
         self.set_worldview()
         self.set_backstory()
         self.set_race_traits()
-        self.set_race_characteristics_bonuces()
         
     def set_final_default_values(self):
         '''Финальная установка значений не требующих выбора'''
@@ -220,6 +239,9 @@ class CharConstructor:
         
         #от класса
         self.set_hits()
+        
+        #от расы
+        self.set_race_characteristics_bonuces()
         
         
     def set_gender(self, gender):
@@ -242,12 +264,21 @@ class CharConstructor:
             name = random.choice(names)
         self.player_list['name'] = name
         print(f'Выбрано имя: {name}')
+        
+    def get_default_names(self, gender: str):
+        if gender == 'Мужской':
+            return self.supabase.get_race_data_by_name(races[self.player_list['race']])['race']['man_names']
+        if gender == 'Женский':
+            return self.supabase.get_race_data_by_name(races[self.player_list['race']])['race']['woman_names']
+        return self.supabase.get_race_data_by_name(races[self.player_list['race']])['race']['man_names'] + self.supabase.get_race_data_by_name(races[self.player_list['race']])['race']['woman_names']
 
     def set_story(self, story):
         if story == 'random':
             story = random.choice(self.supabase.get_lore_data()['races'][races[self.player_list['race']]])
         print(f'Выбрана предыстория: {story}')
-
+        
+    def get_default_stories(self):
+        return self.supabase.get_lore_data()['races'][races[self.player_list['race']]]
 
     def set_age(self, age):
         if age == 'random':
@@ -256,6 +287,9 @@ class CharConstructor:
 
         self.player_list['age'] = age
         print(f'Выбран возраст: {age}')
+        
+    def get_default_age(self):
+        return self.supabase.get_race_data_by_name(races[self.player_list['race']])['race']['age']
 
     
     def set_saving_throws(self):
