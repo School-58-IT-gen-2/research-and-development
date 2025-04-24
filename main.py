@@ -5,7 +5,7 @@ if __name__ == "__main__":
     uvicorn.run(
         app="rnd_fastapi_server.server:app",
         host="localhost",   
-        port=8080,
+        port=8000,
         reload=True,
     )
 #main()

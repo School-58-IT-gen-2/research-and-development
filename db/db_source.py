@@ -33,6 +33,20 @@ class DBSource():
         except Exception as error:
             print(f"Error: {error}")
 
+    def insert(self, table_name: str, insert_dict: dict) -> List[dict]:
+        """
+        Вставка строки в таблицу.
+
+        Args:
+            table_name (str): Название таблицы.
+            dict (dict): Словарь с данными для новой строки.
+        
+        Returns:
+            List[dict]: Список из словаря с новой строкой.
+        """
+        return dict(self.__supabase.table(table_name).insert(insert_dict).execute())[
+            "data"
+        ]
 
     def get_race_data_by_name(self,name: str) -> list:
         return dict(self.__supabase.table("races").select().eq("name", name).execute())[

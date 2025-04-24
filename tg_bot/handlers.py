@@ -282,7 +282,8 @@ def choosing_name(update: Update, context: CallbackContext) -> None:
     else:
         constructor.set_name(update.message.text)
 
-    constructor.set_default_values() #Финальное заполнение листа
+    constructor.set_initialize_default_values()
+    constructor.set_final_default_values() #Финальное заполнение листа
     formatted_response = format_character_card(constructor.player_list)
     formatted_response = escape_markdown_v2(formatted_response)  # Экранируем текст
     update.message.reply_text(formatted_response, parse_mode='MarkdownV2', reply_markup=ReplyKeyboardRemove())

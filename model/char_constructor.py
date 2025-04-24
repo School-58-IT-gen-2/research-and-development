@@ -19,6 +19,7 @@ CHARACTERISTICS_TRANSLATE = {'strength': 'Сила', "dexterity": "Ловкос�
 class CharConstructor:
     def __init__(self):
         self.player_list = {
+            "id": None,
             "race": "",
             "subrace": "",
             "character_class": "",
@@ -28,36 +29,43 @@ class CharConstructor:
             "ability_saving_throws": {},
             "death_saving_throws": 0,
             "inspiration": False,
-            "skills":[],
+            "skills": [],
             "interference": False,
             "advantages": False,
-            "traits_and_abilities":{},
+            "traits_and_abilities": {},
             "class_features": {},
-            "weaknesses":{},
-            "valuables":{},
+            "weaknesses": {},
+            "valuables": {},
             "name": "",
-            "stat_modifiers":{"strength":0,"dexterity":0,"constitution":0,"intelligence":0,"wisdom":0,"charisma":0},
-            "stats":{"strength":None,"dexterity":None,"constitution":None,"intelligence":None,"wisdom":None,"charisma":None},
+            "stat_modifiers": {"strength": 0, "dexterity": 0, "constitution": 0, 
+                            "intelligence": 0, "wisdom": 0, "charisma": 0},
+            "stats": {"strength": None, "dexterity": None, "constitution": None,
+                    "intelligence": None, "wisdom": None, "charisma": None},
             "backstory": "",
             "notes": "",
             "diary": "",
             "hp": 0,
-            "level": 1,
+            "lvl": 1,  # добавлено из первой модели
             "passive_perception": 1,
             "travel_speed": 1,
             "speed": 0,
-            "weapons_and_equipment":{},
-            "spells":{},
-            "languages":[],
-            "special_features":{},
-            "npc_relations":{},
-            "user_id":0,
+            "weapons_and_equipment": {},
+            "spells": {},
+            "languages": [],
+            "special_features": {},
+            "npc_relations": {},
+            "user_id": 0,
             "surname": "",
             "inventory": [],
             "age": 1,
-            "attack_and_damage_values":{},
+            "attack_and_damage_values": {},
             "worldview": "",
-            "gender": ""
+            "gender": "",
+            # Новые поля из первой модели
+            "gold": None,
+            "archetype": None,
+            "fighting_style": None,
+            "created_at": None
         }
         self.skills_counter = 0
         self.inventory_counter = 0
@@ -70,7 +78,7 @@ class CharConstructor:
         self.__class_data = dict()
         self.__last_characteristic_variants = []
         
-    def initialize_char(self, char_class: str, char_race: str, char_subrace: str):
+    def initialize_char(self, char_class: str, char_race: str, char_subrace: str, char_gender: str, user_id: str):
         '''
         Инициализация персонада по 3 параметрам
         Request: класс, раса, подраса
@@ -79,6 +87,8 @@ class CharConstructor:
         self.set_class(char_class)
         self.set_race(char_race)
         self.set_subrace(char_subrace if char_subrace != None else 'random')
+        self.set_gender(char_gender)
+        self.player_list['user_id'] = user_id
         
         self.set_initialize_default_values()
         
@@ -351,7 +361,7 @@ class CharConstructor:
             
     def set_class_features(self):
         traits = []
-        for i in range(1, self.player_list['level']):
+        for i in range(1, self.player_list['lvl']):
             traits += self.__class_data["class"]["features_by_level"][str(i)]
         self.player_list["class_features"] = traits
         
