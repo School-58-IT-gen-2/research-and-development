@@ -196,7 +196,6 @@ class CharConstructor:
         return 'more'
         
     def get_skills(self):
-
         
         skills_list = read_json_file('json_data\class_constructor.json')["Classes"][self.player_list["character_class"]]["Навыки"]["Список"]
         for skill in self.player_list["skills"]:
@@ -209,6 +208,7 @@ class CharConstructor:
         
         options_list = read_json_file('json_data\class_constructor.json')["Classes"][self.player_list["character_class"]]["Опции инвентаря"]
         self.inventory_lim = len(options_list)
+        options_list.append(self.get_weapon_group())
         return options_list
     
     def add_inventory(self, item: str):
@@ -400,5 +400,7 @@ class CharConstructor:
         for i in list(all_bonuces.keys()):
             self.player_list['stats'][i] += all_bonuces[i]
             
-    def get_weapon_group(self, group: str):
-        return self.supabase.get_weapon_data['weapon_types'][group]
+    def get_weapon_group(self, group: str = 'all'):
+        if group == 'all':
+            return self.supabase.get_weapon_data()['weapon_types'] 
+        return self.supabase.get_weapon_data()['weapon_types'][group]

@@ -33,12 +33,14 @@ async def create_char(create: Create):
     #response = httpx.post(f"{os.getenv("QUESTHUB_URL")}/api/v1/characters/char-list",json=char_dict)
     return char_dict
     
-@app.get("/character-list-options/{char_class}/{char_race}/{char_subrace}")
-async def get_options(char_class: str, char_race: str, char_subrace: str):
+@app.get("/character-list-options")
+async def get_options(char_class: str, char_race: str, char_subrace: str = 'random', char_gender: str = 'M'):
     new_char = CharConstructor()
     new_char.initialize_char(char_class=char_class,
                              char_race=char_race,
-                             char_subrace=char_subrace)
+                             char_subrace=char_subrace,
+                             char_gender=char_gender,
+                             user_id='')
     return new_char.get_options()
 
 @app.put("/save-character-list")
