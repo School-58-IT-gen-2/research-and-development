@@ -2,6 +2,7 @@ from typing import List
 from pydantic import SecretStr
 from supabase.client import ClientOptions
 from supabase import create_client, Client
+import uuid
 import json
 import os
 
@@ -48,6 +49,22 @@ class DBSource():
             "data"
         ]
 
+    def update(self, table_name: str, update_dict: dict, id: str| uuid.UUID) -> List[dict]:
+        """
+        Изменение строки в таблице.
+
+        Args:
+            table_name (str): Название таблицы.
+            dict (dict): Словарь с данными для новой строки.
+            id (int): id строки, которую нужно изменить.
+
+        Returns:
+            List[dict]: Список из словаря с новой строкой.
+        """
+        return dict(
+            self.__supabase.table(table_name).update(update_dict).eq("id", id).execute()
+        )["data"]
+    
     def get_race_data_by_name(self,name: str) -> list:
         return dict(self.__supabase.table("races").select().eq("name", name).execute())[
             "data"

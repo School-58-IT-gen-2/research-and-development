@@ -168,7 +168,14 @@ class CharConstructor:
             characteristics = random.choice(self.__last_characteristic_variants)
         target_characteristic = next((k for k, v in self.player_list['stats'].items() if v is None), None)
         self.__characteristic_limit -= 9 if int(characteristics) == 15 else int(characteristics) - 8
+        
         exec(f"self.player_list['stats']['{target_characteristic}'] = {int(characteristics)}")
+        
+        if self.player_list['stats']['charisma'] != None:
+            self.set_modifiers() # от статов
+            self.set_hits() # от класса
+            self.set_race_characteristics_bonuces() # от расы
+        
         print(f'Выбрана: {target_characteristic}, значение: {characteristics}')
 
     def add_skill(self, skill):
@@ -360,9 +367,9 @@ class CharConstructor:
             self.player_list["traits_and_abilities"][i[keys[0]]] = i[keys[1]]
             
     def set_class_features(self):
-        traits = []
+        traits = dict()
         for i in range(1, self.player_list['lvl']):
-            traits += self.__class_data["class"]["features_by_level"][str(i)]
+            traits[i] = self.__class_data["class"]["features_by_level"][str(i)]
         self.player_list["class_features"] = traits
         
     def generate_random_char(self):

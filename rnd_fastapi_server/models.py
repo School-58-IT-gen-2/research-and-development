@@ -85,7 +85,7 @@ class Stats(BaseModel):
 class CharacterRequest(BaseModel):
     """Объединенная модель персонажа"""
     # Поля из первой модели
-    id: Optional[uuid.UUID] = None
+    id: Optional[Union[str, uuid.UUID]] = None
     race: Optional[str] = None
     character_class: Optional[str] = None
     backstory: Optional[str] = None
