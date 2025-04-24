@@ -1,23 +1,23 @@
-import asyncio
-import random
 from aiogram import Bot, Dispatcher, types, F
-from aiogram.filters import Command
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove, CallbackQuery
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import State, StatesGroup
-from config import BOT_TOKEN, SUPABASE_URL, SUPABASE_KEY
-from model.char_constructor import CharConstructor
+from aiogram.fsm.state import StatesGroup, State
+from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.filters import Command
+from aiogram.types import Message, CallbackQuery
+from tg_bot.utils import format_character_card, escape_markdown_v2, get_key_by_value
 from db.db_source import DBSource
+from config import SUPABASE_URL, SUPABASE_KEY
+from model.char_constructor import CharConstructor
+import random
 
-# Инициализация бота и диспетчера
-bot = Bot(token=BOT_TOKEN)
+bot = Bot(token="8154427178:AAEJPcc0xXiRt43YgCNs_hKKqVmibGoyAAA")
 dp = Dispatcher()
 
 db = DBSource(SUPABASE_URL, SUPABASE_KEY)
 db.connect()
 
-class CharacterCreation(StatesGroup):
-    CONSTRUCTOR_START = State()
+class CharacterStates(StatesGroup):
     CHOOSING_CLASS = State()
     CHOOSING_RACE = State()
     CHOOSING_CHARACTERISTICS = State()
@@ -29,10 +29,12 @@ class CharacterCreation(StatesGroup):
     CHOOSING_NAME = State()
 
 constructor = CharConstructor()
-long_callback = {}
+
+def back_button(callback_data: str):
+    return [InlineKeyboardButton(text="⬅ Назад", callback_data=callback_data)]
 
 @dp.message(Command("start"))
-async def start(message: types.Message, state: FSMContext):
+async def start(message: Message, state: FSMContext):
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text="Сгенерировать случайного персонажа", callback_data="random")],
@@ -40,53 +42,45 @@ async def start(message: types.Message, state: FSMContext):
         ]
     )
     await message.answer("Выберите действие:", reply_markup=keyboard)
-    await state.set_state(CharacterCreation.CONSTRUCTOR_START)
 
-@dp.callback_query(F.data == "random")
 @dp.callback_query(F.data == "constructor")
 async def constructor_start(callback: CallbackQuery, state: FSMContext):
-    global constructor
-    constructor = CharConstructor()
-    if callback.data == 'random':
-        result = constructor.generate_random_char()
-        await callback.message.edit_text(f"*Тут выводится случайный персонаж {str(result)}*", reply_markup=None)
-        await state.clear()
-        return
-    
+    constructor.reset()
     classes = constructor.get_classes()
-    keyboard = InlineKeyboardMarkup(
-        inline_keyboard=[[InlineKeyboardButton(text=cls, callback_data=cls)] for cls in classes] +
-                        [[InlineKeyboardButton(text='Выбрать случайную', callback_data='random')]]
-    )
-    await callback.message.edit_text("Выберите класс для вашего персонажа:", reply_markup=keyboard)
-    await state.set_state(CharacterCreation.CHOOSE_CLASS)
+    keyboard = InlineKeyboardBuilder()
+    for char_class in classes:
+        keyboard.button(text=char_class, callback_data=f"class_{char_class}")
+    keyboard.button(text="Выбрать случайную", callback_data="class_random")
+    await callback.message.edit_text("Выберите класс:", reply_markup=keyboard.as_markup())
+    await state.set_state(CharacterStates.CHOOSING_CLASS)
 
-@dp.callback_query()
+@dp.callback_query(F.data.startswith("class_"))
 async def choosing_class(callback: CallbackQuery, state: FSMContext):
-    constructor.set_class(callback.data)
+    char_class = callback.data.split("_")[1]
+    constructor.set_class(char_class)
     races = constructor.get_races()
-    keyboard = InlineKeyboardMarkup(
-        inline_keyboard=[[InlineKeyboardButton(text=race, callback_data=race)] for race in races] +
-                        [[InlineKeyboardButton(text='Выбрать случайную', callback_data='random')]]
-    )
-    await callback.message.edit_text("Выберите расу для вашего персонажа:", reply_markup=keyboard)
-    await state.set_state(CharacterCreation.CHOOSE_RACE)
+    keyboard = InlineKeyboardBuilder()
+    for race in races:
+        keyboard.button(text=race, callback_data=f"race_{race}")
+    keyboard.button(text="Выбрать случайную", callback_data="race_random")
+    keyboard.row(*back_button("constructor"))
+    await callback.message.edit_text("Выберите расу:", reply_markup=keyboard.as_markup())
+    await state.set_state(CharacterStates.CHOOSING_RACE)
 
-@dp.callback_query()
-async def choosing_race(callback: CallbackQuery, state: FSMContext):
-    constructor.set_race(callback.data)
-    characteristic, characteristics_btns, recommended = constructor.get_characteristics()
-    keyboard = InlineKeyboardMarkup(
-        inline_keyboard=[[InlineKeyboardButton(text=skill, callback_data=skill)] for skill in characteristics_btns] +
-                        [[InlineKeyboardButton(text='Выбрать случайную', callback_data='random')]]
-    )
-    await callback.message.edit_text(f"Выберите характеристику {characteristic.upper()} для вашего персонажа:", reply_markup=keyboard)
-    await state.set_state(CharacterCreation.CHOOSE_CHARACTERISTICS)
+# Аналогично добавляются обработчики для других этапов
 
-# ... остальные хендлеры аналогично ...
-
-async def main():
-    await dp.start_polling(bot)
+@dp.callback_query(F.data.startswith("back_"))
+async def go_back(callback: CallbackQuery, state: FSMContext):
+    previous_state = callback.data.split("_")[1]
+    if previous_state == "constructor":
+        await constructor_start(callback, state)
+    elif previous_state == "class":
+        await choosing_class(callback, state)
+    elif previous_state == "race":
+        return
+        await choosing_race(callback, state)
+    # Добавить аналогично для всех состояний
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    import asyncio
+    asyncio.run(dp.start_polling(bot))
