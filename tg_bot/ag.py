@@ -1,155 +1,168 @@
 from aiogram import Bot, Dispatcher, F
-from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
-from aiogram.filters import Command
+from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, Message
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.utils.keyboard import InlineKeyboardBuilder
+import aiohttp
+import random
 import asyncio
 import logging
-import httpx
-import uuid
 
-API_BASE_URL = "http://localhost:8000"  # поменяй на адрес своего API если нужно
+API_TOKEN = "8154427178:AAEJPcc0xXiRt43YgCNs_hKKqVmibGoyAAA"
 
+# --- Data ---
+CLASSES = [
+    "Варвар",
+    "Бард",
+    "Плут",
+    "Друид",
+    "Колдун",
+    "Монах",
+    "Паладин",
+    "Следопыт"
+    "Жрец",
+    "Чародей",
+    "Воин",
+    "Колдун"
+]
 
-API_TOKEN = '8154427178:AAEJPcc0xXiRt43YgCNs_hKKqVmibGoyAAA'
+RACES = ["Человек", "Эльф", "Полуорк", "Гном", "Дварф", "Полурослик", "Драконорождённый", "Полуэльф", "Тифлинг"]
+GENDERS = ["Мужской", "Женский"]
 
-# Включаем логирование
-logging.basicConfig(level=logging.INFO)
+SUBRACES = {
+    "Драконорождённый": ["Красный драконорождённый", "Синий драконорождённый"],
+    "Дварф": ["Горный дворф", "Холмовой дворф"],
+    "Эльф": ["Высший эльф", "Лесной эльф", "Тёмный эльф (дроу)"],
+    "Гном": ["Горный гном", "Лесной гном"],
+    "Полуэльф": ["Эльфийский полуэльф", "Человечий полуэльф"],
+    "Полурослик": ["Ловкий полурослик", "Стойкий полурослик"]
+}
 
-# Инициализация бота и диспетчера
-bot = Bot(token=API_TOKEN)
-dp = Dispatcher(storage=MemoryStorage())
-
-# Определение состояний
+# --- FSM ---
 class CharacterCreation(StatesGroup):
     CHOOSING_CLASS = State()
     CHOOSING_RACE = State()
+    CHOOSING_SUBRACE = State()
+    CHOOSING_GENDER = State()
     CHOOSING_CHARACTERISTICS = State()
-    SETTING_CHARACTERISTIC = State()
     CHOOSING_SKILLS = State()
     CHOOSING_INVENTORY = State()
-    CHOOSING_GENDER = State()
     CHOOSING_AGE = State()
     CHOOSING_STORY = State()
     CHOOSING_NAME = State()
 
-# Варианты классов и рас
-CLASSES = ["Следопыт", "Варвар", "Бард", "Плут", "Друид", "Колдун", "Монах", "Паладин", "Жрец", "Маг", "Воин", "Волшебник"]
-RACES = ["Человек", "Эльф", "Полуорк", "Гном", "Дварф", "Полурослик", "Драконорождённый", "Полуэльф", "Тифлинг"]
-GENDERS = ["Мужской", "Женский"]
-CHARACTERISTICS_ORDER = ["Сила", "Ловкость", "Телосложение", "Интеллект", "Мудрость", "Харизма"]
-CHARACTERISTIC_VALUES = ["8", "10", "12", "13", "14", "15"]
+# --- Bot Setup ---
+bot = Bot(token=API_TOKEN)
+dp = Dispatcher(storage=MemoryStorage())
 
+# --- Helpers ---
+def get_keyboard(options: list, add_random=True, add_back=True):
+    builder = InlineKeyboardBuilder()
+    for opt in options:
+        builder.button(text=opt, callback_data=opt)
+    if add_random:
+        builder.button(text="🎲 Случайно", callback_data="__random__")
+    if add_back:
+        builder.button(text="⬅️ Назад", callback_data="__back__")
+    builder.adjust(2)
+    return builder.as_markup()
 
-# Генератор клавиатуры по списку
-def generate_keyboard(options: list[str], prefix: str) -> InlineKeyboardMarkup:
-    buttons = [
-        [InlineKeyboardButton(text=option, callback_data=f"{prefix}:{option}")]
-        for option in options
-    ]
-    return InlineKeyboardMarkup(inline_keyboard=buttons)
-
-
-
-# Старт команды
-@dp.message(Command("start"))
+# --- Handlers ---
+@dp.message(F.text == "/start")
 async def start(message: Message, state: FSMContext):
-    await state.set_state(CharacterCreation.CHOOSING_CLASS)
-    await message.answer(
-        "Привет! Давай создадим персонажа. Выбери класс:",
-        reply_markup=generate_keyboard(CLASSES, "class")
-    )
-
-
-# Последовательная обработка каждого состояния
-@dp.callback_query(F.data.startswith("class"))
-async def handle_class_choice(callback: CallbackQuery, state: FSMContext):
-    chosen_class = callback.data.split(":")[1]
-    await state.update_data(ch_class=chosen_class)
-    await callback.message.edit_text(
-        f"Класс выбран: {chosen_class}\nТеперь выбери расу:",
-        reply_markup=generate_keyboard(RACES, "race")
-    )
-    await state.set_state(CharacterCreation.CHOOSING_RACE)
-    await callback.answer()
-
-
-@dp.callback_query(F.data.startswith("race"))
-async def handle_race_choice(callback: CallbackQuery, state: FSMContext):
-    chosen_race = callback.data.split(":")[1]
-    await state.update_data(race=chosen_race)
-    await callback.message.edit_text(
-        f"Раса выбрана: {chosen_race}\nТеперь выбери пол персонажа:",
-        reply_markup=generate_keyboard(GENDERS, "gender")
-    )
-    await state.set_state(CharacterCreation.CHOOSING_GENDER)
-    await callback.answer()
-
-@dp.callback_query(F.data.startswith("gender"))
-async def handle_gender_choice(callback: CallbackQuery, state: FSMContext):
-    chosen_gender = callback.data.split(":")[1]
-    await state.update_data(gender=chosen_gender)
-    await callback.message.edit_text(
-        f"Пол выбран: {chosen_gender}\nСколько лет персонажу?"
-    )
-    await state.set_state(CharacterCreation.CHOOSING_AGE)
-    await callback.answer()
-
-
-@dp.message(CharacterCreation.CHOOSING_CHARACTERISTICS)
-async def choose_characteristics(message: Message, state: FSMContext):
-    await state.update_data(characteristics=message.text)
-    await message.answer("Теперь выбери навыки:")
-    await state.set_state(CharacterCreation.CHOOSING_SKILLS)
-
-@dp.message(CharacterCreation.CHOOSING_SKILLS)
-async def choose_skills(message: Message, state: FSMContext):
-    await state.update_data(skills=message.text)
-    await message.answer("Что у него в инвентаре?")
-    await state.set_state(CharacterCreation.CHOOSING_INVENTORY)
-
-@dp.message(CharacterCreation.CHOOSING_INVENTORY)
-async def choose_inventory(message: Message, state: FSMContext):
-    await state.update_data(inventory=message.text)
-    await message.answer("Сколько лет персонажу?")
-    await state.set_state(CharacterCreation.CHOOSING_AGE)
-
-@dp.message(CharacterCreation.CHOOSING_AGE)
-async def choose_age(message: Message, state: FSMContext):
-    await state.update_data(age=message.text)
-    await message.answer("Расскажи предысторию персонажа:")
-    await state.set_state(CharacterCreation.CHOOSING_STORY)
-
-@dp.message(CharacterCreation.CHOOSING_STORY)
-async def choose_story(message: Message, state: FSMContext):
-    await state.update_data(story=message.text)
-    await message.answer("И наконец, как зовут твоего персонажа?")
-    await state.set_state(CharacterCreation.CHOOSING_NAME)
-
-@dp.message(CharacterCreation.CHOOSING_NAME)
-async def choose_name(message: Message, state: FSMContext):
-    await state.update_data(name=message.text)
-    data = await state.get_data()
-    
-    summary = (
-        f"🎲 Вот твой персонаж:\n"
-        f"Имя: {data.get('name')}\n"
-        f"Класс: {data.get('ch_class')}\n"
-        f"Раса: {data.get('race')}\n"
-        f"Пол: {data.get('gender')}\n"
-        f"Возраст: {data.get('age')}\n"
-        f"Характеристики: {data.get('characteristics')}\n"
-        f"Навыки: {data.get('skills')}\n"
-        f"Инвентарь: {data.get('inventory')}\n"
-        f"История: {data.get('story')}"
-    )
-
-    await message.answer(summary)
     await state.clear()
+    await message.answer("Выберите класс персонажа:", reply_markup=get_keyboard(CLASSES, add_back=False))
+    await state.set_state(CharacterCreation.CHOOSING_CLASS)
 
-# Запуск бота
+@dp.callback_query(CharacterCreation.CHOOSING_CLASS)
+async def choose_class(callback: CallbackQuery, state: FSMContext):
+    await callback.answer()
+    if callback.data == "__random__":
+        selected = random.choice(CLASSES)
+    elif callback.data == "__back__":
+        await callback.message.edit_text("Выберите класс персонажа:", reply_markup=get_keyboard(CLASSES, add_back=False))
+        return
+    else:
+        selected = callback.data
+
+    await state.update_data(char_class=selected)
+    await callback.message.edit_text("Выберите расу персонажа:", reply_markup=get_keyboard(RACES))
+    await state.set_state(CharacterCreation.CHOOSING_RACE)
+
+@dp.callback_query(CharacterCreation.CHOOSING_RACE)
+async def choose_race(callback: CallbackQuery, state: FSMContext):
+    await callback.answer()
+    if callback.data == "__random__":
+        selected = random.choice(RACES)
+    elif callback.data == "__back__":
+        await callback.message.edit_text("Выберите класс персонажа:", reply_markup=get_keyboard(CLASSES))
+        await state.set_state(CharacterCreation.CHOOSING_CLASS)
+        return
+    else:
+        selected = callback.data
+
+    await state.update_data(char_race=selected)
+
+    if selected in SUBRACES:
+        await callback.message.edit_text(f"Выберите подрасу для {selected}:", reply_markup=get_keyboard(SUBRACES[selected]))
+        await state.set_state(CharacterCreation.CHOOSING_SUBRACE)
+    else:
+        await callback.message.edit_text("Выберите гендер персонажа:", reply_markup=get_keyboard(GENDERS))
+        await state.set_state(CharacterCreation.CHOOSING_GENDER)
+
+@dp.callback_query(CharacterCreation.CHOOSING_SUBRACE)
+async def choose_subrace(callback: CallbackQuery, state: FSMContext):
+    await callback.answer()
+    user_data = await state.get_data()
+    race = user_data.get("char_race")
+
+    if callback.data == "__random__":
+        selected = random.choice(SUBRACES[race])
+    elif callback.data == "__back__":
+        await callback.message.edit_text("Выберите расу персонажа:", reply_markup=get_keyboard(RACES))
+        await state.set_state(CharacterCreation.CHOOSING_RACE)
+        return
+    else:
+        selected = callback.data
+
+    await state.update_data(char_subrace=selected)
+    await callback.message.edit_text("Выберите гендер персонажа:", reply_markup=get_keyboard(GENDERS))
+    await state.set_state(CharacterCreation.CHOOSING_GENDER)
+
+@dp.callback_query(CharacterCreation.CHOOSING_GENDER)
+async def choose_gender(callback: CallbackQuery, state: FSMContext):
+    await callback.answer()
+    if callback.data == "__random__":
+        selected = random.choice(GENDERS)
+    elif callback.data == "__back__":
+        user_data = await state.get_data()
+        race = user_data.get("chosen_race")
+        if race in SUBRACES:
+            await callback.message.edit_text(f"Выберите подрасу для {race}:", reply_markup=get_keyboard(SUBRACES[race]))
+            await state.set_state(CharacterCreation.CHOOSING_SUBRACE)
+        else:
+            await callback.message.edit_text("Выберите расу персонажа:", reply_markup=get_keyboard(RACES))
+            await state.set_state(CharacterCreation.CHOOSING_RACE)
+        return
+    else:
+        selected = callback.data
+
+    await state.update_data(char_gender=selected)
+    data = await state.get_data()
+    async with aiohttp.ClientSession() as session:
+        params = data
+        async with session.get("http://localhost:8000/character-list-options", params=params) as resp:
+            if resp.status == 200:
+                json_data = await resp.json()
+                print(json_data)
+                await callback.message.edit_text(f"Сводка персонажа:\n{json_data['options']}")
+            else:
+                await callback.message.edit_text("Произошла ошибка при получении данных с сервера.")
+
+# --- Main ---
 async def main():
+    logging.basicConfig(level=logging.INFO)
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
