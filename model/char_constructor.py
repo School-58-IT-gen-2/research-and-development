@@ -104,7 +104,8 @@ class CharConstructor:
             'skils': self.get_skills(),
             'inventory': self.get_inventory(),
             'default_age': self.get_default_age(),
-            'default_story': self.get_default_stories()
+            'default_story': self.get_default_stories(),
+            'default_names': self.get_names(self.player_list['race'], self.player_list['gender'])
         }
         
 
@@ -270,6 +271,11 @@ class CharConstructor:
             gender = random.choice(['Мужской', 'Женский'])
         self.player_list['gender'] = gender
         print(f'Выбран гендер: {gender}')
+        
+    def get_names(self, race, gender):
+        if self.player_list['gender'] == 'Мужской':
+            return self.supabase.get_race_data_by_name(races[race])['race']['man_names']
+        return self.supabase.get_race_data_by_name(races[race])['race']['woman_names']
 
     def set_name(self, name):
         if name == 'random':
