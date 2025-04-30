@@ -28,8 +28,8 @@ class ClassVariants(str, Enum):
     wizzard = "Волшебник"
 
 class GenderVariants(str, Enum):
-    M = "M"
-    F = "W"
+    M = "Мужской"
+    F = "Женский"
 
 class Create(BaseModel):
     user_id: Optional[str] = None
