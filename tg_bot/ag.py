@@ -7,6 +7,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 import aiohttp
 import random
 import asyncio
+import uuid
 import logging
 
 API_TOKEN = "8154427178:AAEJPcc0xXiRt43YgCNs_hKKqVmibGoyAAA"
@@ -163,6 +164,25 @@ async def choose_gender(callback: CallbackQuery, state: FSMContext):
                     characteristics_options=json_data["options"],
                     current_stat_index=0
                 )
+
+                # Второй запрос: инициализация персонажа
+                init_payload = {
+                    "user_id": str(callback.from_user.id),
+                    "gender": data.get("char_gender"),
+                    "character_class": data.get("char_class"),
+                    "race": data.get("char_race"),
+                    "subrace": data.get("char_subrace", "random")
+                }
+
+                async with session.post("http://localhost:8000/initialize-character-list", json=init_payload) as post_resp:
+                    if post_resp.status == 200:
+                        init_response = await post_resp.json()
+                        await state.update_data(character_list=init_response)
+                    else:
+                        await callback.message.answer("Ошибка при инициализации персонажа.")
+
+
+
                 await ask_next_stat(callback.message, state)
                 await state.set_state(CharacterCreation.SETTING_CHARACTERISTIC)
             else:
@@ -445,6 +465,49 @@ async def show_character_summary(message: Message, state: FSMContext):
     inventory = "\n".join([f"- {', '.join(i)}" for i in data.get("inventory_selected", [])])
     story = data.get("char_story", "—")
     name = data.get("char_name", "—")
+
+    character_list = data.get('character_list')
+    
+
+    character_list['stats']['strength'] = data.get("char_stats")['Сила']
+    character_list['stats']['dexterity'] = data.get("char_stats")['Ловкость']
+    character_list['stats']['constitution'] = data.get("char_stats")['Телосложение']
+    character_list['stats']['intelligence'] = data.get("char_stats")['Интеллект']
+    character_list['stats']['wisdom'] = data.get("char_stats")['Мудрость']
+    character_list['stats']['charisma'] = data.get("char_stats")['Харизма']
+
+    character_list['skills'] = data.get("skills_selected")
+
+    for i in data.get('inventory_selected'):
+        character_list['inventory'].append({
+            'id': str(uuid.uuid4()),
+            'count': 1,
+            'name': i,
+            'description': 'Без описания'
+        })
+
+    character_list['backstory'] = data.get("char_story")
+
+    character_list['name'] = data.get("char_name")
+
+    character_list['age'] = data.get("char_age")
+
+    print(character_list)
+
+    async with aiohttp.ClientSession() as session:
+        async with session.put("http://localhost:8000/save-character-list", json=character_list) as post_resp:
+            if post_resp.status == 200:
+                print(post_resp)
+            else:
+                print(post_resp.json)
+                print(post_resp)
+                print(post_resp.status)
+                init_response = await post_resp.json()
+                print(init_response)
+                print('API вернул ошибку')
+
+
+
 
     text = (
         f"*🧝‍♂️ Лист персонажа:*\n"
