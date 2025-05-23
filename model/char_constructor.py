@@ -50,7 +50,7 @@ class CharConstructor:
             "travel_speed": 1,
             "speed": 0,
             "weapons_and_equipment": {},
-            "spells": {},
+            "spells": [],
             "languages": [],
             "special_features": {},
             "npc_relations": {},
@@ -105,7 +105,8 @@ class CharConstructor:
             'inventory': self.get_inventory(),
             'default_age': self.get_default_age(),
             'default_story': self.get_default_stories(),
-            'default_names': self.get_names(self.player_list['race'], self.player_list['gender'])
+            'default_names': self.get_names(self.player_list['race'], self.player_list['gender']),
+            'spells': self.get_spells_options()
         }
         
 
@@ -410,3 +411,15 @@ class CharConstructor:
         if group == 'all':
             return self.supabase.get_weapon_data()['weapon_types'] 
         return self.supabase.get_weapon_data()['weapon_types'][group]
+    
+    def get_spells_options(self):
+        options_data = self.supabase.get_spells_options(self.player_list['character_class'])
+        lvls = list(options_data.keys())
+        all_options = dict()
+        for lvl in lvls:
+            all_options[lvl] = self.supabase.get_all_spells_data(list(map(int, options_data[lvl])))
+        
+        return all_options
+    
+    def set_spells(self, spells: list[dict]):
+        self.player_list['spells'] = spells

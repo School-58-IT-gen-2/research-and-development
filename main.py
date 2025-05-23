@@ -1,5 +1,7 @@
 import uvicorn
 from tg_bot.bot import main
+from model.char_constructor import CharConstructor
+
 
 if __name__ == "__main__":
     uvicorn.run(
@@ -8,4 +10,4 @@ if __name__ == "__main__":
         port=8000,
         reload=True,
     )
-#main()
+main()
