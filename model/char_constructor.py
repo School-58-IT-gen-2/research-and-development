@@ -413,13 +413,13 @@ class CharConstructor:
         return self.supabase.get_weapon_data()['weapon_types'][group]
     
     def get_spells_options(self):
-        options_data = self.supabase.get_spells_options(self.player_list['character_class'])
+        options_data, counts_data = self.supabase.get_spells_options(self.player_list['character_class'])
         lvls = list(options_data.keys())
         all_options = dict()
         for lvl in lvls:
             all_options[lvl] = self.supabase.get_all_spells_data(list(map(int, options_data[lvl])))
         
-        return all_options
+        return all_options, counts_data
     
     def set_spells(self, spells: list[dict]):
         self.player_list['spells'] = spells

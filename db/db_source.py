@@ -92,9 +92,13 @@ class DBSource():
         ][0]
         
     def get_spells_options(self, char_class: str) -> dict:
-        return dict(self.__supabase.table("spell_options").select().eq("class", char_class).execute())[
+        spells = dict(self.__supabase.table("spell_options").select().eq("class", char_class).execute())[
             "data"
         ][0]['options']
+        counts = dict(self.__supabase.table("spell_options").select().eq("class", char_class).execute())[
+            "data"
+        ][0]['count']
+        return spells, counts
         
     def get_all_spells_data(self, indexes: list[int]) -> dict:
         return dict(self.__supabase.table("all_spells").select().in_("id", indexes).execute())[
