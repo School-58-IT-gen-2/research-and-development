@@ -144,7 +144,7 @@ class CharConstructor:
             if subrace == 'random':
                 subrace = random.choice(self.get_subraces())
             self.__subrace_data = subrace
-            self.player_list['subrace'] = subrace
+            self.player_list['subrace'] = subrace['name']
             
             print(f'Выбрана подраса: {subrace}')
         
