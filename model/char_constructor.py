@@ -142,10 +142,9 @@ class CharConstructor:
     def set_subrace(self, subrace: str):
         if self.get_subraces() != []:
             if subrace == 'random':
-                subrace = random.choice(self.get_subraces())
-            self.__subrace_data = subrace
-            self.player_list['subrace'] = subrace['name']
-            
+                subrace = random.choice(self.get_subraces())['name']
+            self.__subrace_data = list(filter(lambda x: x['name'] == subrace, self.get_subraces()))[0]
+            self.player_list['subrace'] = subrace
             print(f'Выбрана подраса: {subrace}')
         
         
@@ -414,6 +413,8 @@ class CharConstructor:
     
     def get_spells_options(self):
         options_data, counts_data = self.supabase.get_spells_options(self.player_list['character_class'])
+        if options_data == None:
+            return None, None
         lvls = list(options_data.keys())
         all_options = dict()
         for lvl in lvls:
