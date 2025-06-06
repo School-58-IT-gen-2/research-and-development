@@ -111,7 +111,7 @@ class CharConstructor:
         
 
     def get_classes(self):
-        return read_json_file('json_data\main_constructor.json')['Classes']
+        return read_json_file('json_data/main_constructor.json')['Classes']
     
     def set_class(self, char_class: str):
         if char_class == 'random':
@@ -122,13 +122,13 @@ class CharConstructor:
         self.__class_data = self.supabase.get_class_data_by_name(classes[self.player_list['character_class']])
 
     def get_races(self):
-        return read_json_file('json_data\main_constructor.json')['Races']
+        return read_json_file('json_data/main_constructor.json')['Races']
     
     def get_subraces(self):
         return self.__race_data["race"]['subraces']
     
     def get_recomended_races(self):
-        return read_json_file('json_data\main_constructor.json')['Races']
+        return read_json_file('json_data/main_constructor.json')['Races']
     
     def set_race(self, char_race: str):
         if char_race == 'random':
@@ -155,7 +155,7 @@ class CharConstructor:
         
         if target_characteristic == None: return None, None, None
         
-        recomended_str = read_json_file('json_data\class_constructor.json')["Classes"][self.player_list["character_class"]]["Рекомендуемые характеристики"][CHARACTERISTICS_TRANSLATE[target_characteristic]]
+        recomended_str = read_json_file('json_data/class_constructor.json')["Classes"][self.player_list["character_class"]]["Рекомендуемые характеристики"][CHARACTERISTICS_TRANSLATE[target_characteristic]]
         
         recomended_min, recomended_max = list(map(int, recomended_str.split('-')))
         recomended_btns = list(map(str, range(8, min(16, recomended_max + 3))))
@@ -182,7 +182,7 @@ class CharConstructor:
 
     def add_skill(self, skill):
         if skill == 'random':
-            skills_list = read_json_file('json_data\class_constructor.json')["Classes"][self.player_list["character_class"]]["Навыки"]["Список"]
+            skills_list = read_json_file('json_data/class_constructor.json')["Classes"][self.player_list["character_class"]]["Навыки"]["Список"]
             for s in self.player_list["skills"]:
                 
                 skills_list.remove(s)
@@ -191,7 +191,7 @@ class CharConstructor:
         else:
             self.player_list['skills'].append(skill)
         self.skills_counter += 1
-        skills_max_count = read_json_file('json_data\class_constructor.json')["Classes"][self.player_list["character_class"]]["Навыки"]["Количество"]
+        skills_max_count = read_json_file('json_data/class_constructor.json')["Classes"][self.player_list["character_class"]]["Навыки"]["Количество"]
         print(f'Выбран навык: {skill}, количество навыков: {self.skills_counter}, максимальное количество навыков: {skills_max_count}')
         if self.skills_counter == skills_max_count:
             return 'thats it'
@@ -199,16 +199,16 @@ class CharConstructor:
         
     def get_skills(self):
         
-        skills_list = read_json_file('json_data\class_constructor.json')["Classes"][self.player_list["character_class"]]["Навыки"]["Список"]
+        skills_list = read_json_file('json_data/class_constructor.json')["Classes"][self.player_list["character_class"]]["Навыки"]["Список"]
         for skill in self.player_list["skills"]:
 
             skills_list.remove(skill)
 
-        return {"skills_list": skills_list, "skills_count": self.skills_counter, "skills_limit": read_json_file('json_data\class_constructor.json')["Classes"][self.player_list["character_class"]]["Навыки"]["Количество"]}
+        return {"skills_list": skills_list, "skills_count": self.skills_counter, "skills_limit": read_json_file('json_data/class_constructor.json')["Classes"][self.player_list["character_class"]]["Навыки"]["Количество"]}
     
     def get_inventory(self) -> list[str]:
         
-        options_list = read_json_file('json_data\class_constructor.json')["Classes"][self.player_list["character_class"]]["Опции инвентаря"]
+        options_list = read_json_file('json_data/class_constructor.json')["Classes"][self.player_list["character_class"]]["Опции инвентаря"]
         self.inventory_lim = len(options_list)
         options_list.append(self.get_weapon_group())
         return options_list

@@ -1,5 +1,5 @@
 import uvicorn
-from tg_bot.bot import main
+# from tg_bot.bot import main
 from model.char_constructor import CharConstructor
 
 
