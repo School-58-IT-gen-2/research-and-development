@@ -413,6 +413,8 @@ class CharConstructor:
     
     def get_spells_options(self):
         options_data, counts_data = self.supabase.get_spells_options(self.player_list['character_class'])
+        if options_data == None:
+            return None, None
         lvls = list(options_data.keys())
         all_options = dict()
         for lvl in lvls:
