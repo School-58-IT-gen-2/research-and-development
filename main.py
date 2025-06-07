@@ -1,12 +1,13 @@
 import uvicorn
-# from tg_bot.bot import main
+from tg_bot.bot import main
+from model.char_constructor import CharConstructor
+
 
 if __name__ == "__main__":
     uvicorn.run(
         app="rnd_fastapi_server.server:app",
-        host="0.0.0.0",   
-        port=6000,
+        host="localhost",   
+        port=8000,
         reload=True,
     )
-# main()
-# потом раскоментите, когда будете запускать бота на постоянке
+#main()

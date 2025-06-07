@@ -2,6 +2,7 @@ from typing import List
 from pydantic import SecretStr
 from supabase.client import ClientOptions
 from supabase import create_client, Client
+import uuid
 import json
 import os
 
@@ -33,7 +34,37 @@ class DBSource():
         except Exception as error:
             print(f"Error: {error}")
 
+    def insert(self, table_name: str, insert_dict: dict) -> List[dict]:
+        """
+        Вставка строки в таблицу.
 
+        Args:
+            table_name (str): Название таблицы.
+            dict (dict): Словарь с данными для новой строки.
+        
+        Returns:
+            List[dict]: Список из словаря с новой строкой.
+        """
+        return dict(self.__supabase.table(table_name).insert(insert_dict).execute())[
+            "data"
+        ]
+
+    def update(self, table_name: str, update_dict: dict, id: str| uuid.UUID) -> List[dict]:
+        """
+        Изменение строки в таблице.
+
+        Args:
+            table_name (str): Название таблицы.
+            dict (dict): Словарь с данными для новой строки.
+            id (int): id строки, которую нужно изменить.
+
+        Returns:
+            List[dict]: Список из словаря с новой строкой.
+        """
+        return dict(
+            self.__supabase.table(table_name).update(update_dict).eq("id", id).execute()
+        )["data"]
+    
     def get_race_data_by_name(self,name: str) -> list:
         return dict(self.__supabase.table("races").select().eq("name", name).execute())[
             "data"
@@ -59,3 +90,17 @@ class DBSource():
         return dict(self.__supabase.table("lore").select().eq("id", 1).execute())[
             "data"
         ][0]
+        
+    def get_spells_options(self, char_class: str) -> dict:
+        spells = dict(self.__supabase.table("spell_options").select().eq("class", char_class).execute())[
+            "data"
+        ][0]['options']
+        counts = dict(self.__supabase.table("spell_options").select().eq("class", char_class).execute())[
+            "data"
+        ][0]['count']
+        return spells, counts
+        
+    def get_all_spells_data(self, indexes: list[int]) -> dict:
+        return dict(self.__supabase.table("all_spells").select().in_("id", indexes).execute())[
+            "data"
+        ]

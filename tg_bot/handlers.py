@@ -54,11 +54,14 @@ def constructor_start(update: Update, context: CallbackContext) -> int:
 
 
     query = update.callback_query
-    if query.data == 'random':
-        query.edit_message_text("*Тут выводится случайный персонаж", reply_markup=InlineKeyboardMarkup([]))
-        return ConversationHandler.END
     global constructor
     constructor = CharConstructor()
+    if query.data == 'random':
+
+        result = constructor.generate_random_char()
+
+        query.edit_message_text(f"*Тут выводится случайный персонаж {str(result)}", reply_markup=InlineKeyboardMarkup([]))
+        return ConversationHandler.END
     query.answer()
     classes = constructor.get_classes()
     keyboard = [[InlineKeyboardButton(race, callback_data=race)] for race in classes] + [[InlineKeyboardButton('Выбрать случайную', callback_data='random')]]
@@ -200,7 +203,6 @@ def choosing_inventory(update: Update, context: CallbackContext) -> int:
         fixed_strs = [option if len(option) < 32 else ' + '.join(j if len(j) < 10 else j[:10] for j in option.split(' + ')) for option in inventory_strs]
         
         long_callback = dict(zip(list(range(len(inventory_strs))), inventory_strs))
-        print(inventory_strs)
         random_item_index = random.randint(0, len(inventory_strs)-1)
         btns = [[InlineKeyboardButton(option, callback_data=inventory_strs.index(option))] for option in inventory_strs]
         keyboard = btns + [[InlineKeyboardButton('Выбрать случайную', callback_data=random_item_index)]]
@@ -280,7 +282,8 @@ def choosing_name(update: Update, context: CallbackContext) -> None:
     else:
         constructor.set_name(update.message.text)
 
-    constructor.set_default_values() #Финальное заполнение листа
+    constructor.set_initialize_default_values()
+    constructor.set_final_default_values() #Финальное заполнение листа
     formatted_response = format_character_card(constructor.player_list)
     formatted_response = escape_markdown_v2(formatted_response)  # Экранируем текст
     update.message.reply_text(formatted_response, parse_mode='MarkdownV2', reply_markup=ReplyKeyboardRemove())
